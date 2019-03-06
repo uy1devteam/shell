@@ -1,0 +1,4 @@
+ecrire une fonction qui prend en paramettre un fichier ou un texte et pemmet de:
+-counter le nombre de lettre 
+-counter le nombre de caractere exemple a
+-counter le nomtre de mot
