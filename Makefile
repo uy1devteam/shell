@@ -1,11 +1,11 @@
 
 options= -Wall -Wextra
-do : exe
+do : count
 fonctions.o: fonctions.cpp header.h
 	g++ -c ${options} -o fonctions.o -c fonctions.cpp 
 main.o: main.cpp header.h 
 	g++ -c ${options}  -o main.o  main.cpp  
-exe: main.o fonctions.o
-	g++ -o exe main.o fonctions.o
+count: main.o fonctions.o
+	g++ -o count main.o fonctions.o
 clean:
 	rm -rf *.o
