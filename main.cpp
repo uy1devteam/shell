@@ -2,72 +2,122 @@
 #include <fstream>
 #include "header.h"
 #include <string>
+
     using namespace std;
 
     int main(int argc, char**argv){
         
 
-        bool optionsActive[4] = {false},hasOptions = false ;
-        int currentState, nfiles(0), i(0);
-        unsigned int nbWord(0), nbLetter(0), nbLigne(0), j(0), maxLingne(0), total[4]= {0};
-        string ligne, nameFile, option, filesActive[100];
-        
+        bool optionsActive[4] = {false}, hasOptions = false ;
+        int currentState,  i(0);
+        unsigned int nbWord(0), nbLetter(0), nbLigne(0), j(0), maxLingne(0), total[4]= {0}, nbFiles(0);
+        string ligne, option;
+        string* filesListes;
+        char separator = SPACE;
         
         for( i=1; i<argc; i++ )
         {
             option = argv[i];
-            if( option[0] == '-' )
+            if( option[0] == TIRET )
             {
-                hasOptions = true; 
-                if( option.length() > 2 )
+                 
+                if( option[1] == TIRET )
                 {
-                    for( j=1; j<option.length(); j++ )
+                    hasOptions = true;
+                    if( option.compare((string)"--help") == EQUAL){
+                        help();
+                        return 0;
+                    }         
+
+                    if( !active_long_option(option,optionsActive) )
                     {
-                        if( !active_option(option[j], optionsActive ))
+                        cout << "count : option non reconnue  << " << option << " >>" << endl;
+                        return -1;
+                    }    
+                }
+                else
+                {
+
+                    if( option.length() == 1 )
+                    {
+                        separator = TAB;
+
+                        /* add name of file to string array of files */        
                         {
-                            cout << "count : option invalide -- \'" << option[j] << '\'' << endl;
+                            string _filesListes [nbFiles + 1 ] ={(string)""};
+                            for( unsigned int i = 0; i < nbFiles; i++){
+                                _filesListes[i].append(filesListes[i].c_str());
+                            }
+                            filesListes = new string [ nbFiles + 1 ]; 
+                            for( unsigned int i = 0; i < nbFiles; i++){
+                                filesListes[i].append(_filesListes[i].c_str());
+                            }
+                            filesListes[nbFiles] = option;
+                            nbFiles++;
+                        }
+                        continue;
+                    }
+                    hasOptions = true;
+                    if( option.length() > 2 )
+                    {
+                        for( j=1; j<option.length(); j++ )
+                        {
+                            if( !active_option(option[j], optionsActive ))
+                            {
+                                cout << "count : option invalide -- \'" << option[j] << '\'' << endl;
+                                return -1;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if( !active_option(option[1], optionsActive) )
+                        {
+                            cout << "count : option invalide -- \'" << option[1] << '\'' << endl;
                             return -1;
                         }
                     }
                 }
-                else
+            }
+            else
+            {
+                /* add name of file to string array of files */
                 {
-                    if( !active_option(option[1], optionsActive) )
+                    string _filesListes [nbFiles + 1 ] ={(string)""};
+                    for( unsigned int i = 0; i < nbFiles; i++)
                     {
-                        cout << "count : option invalide -- \'" << option[1] << '\'' << endl;
-                        return -1;
+                        _filesListes[i].append(filesListes[i].c_str());
                     }
+                    filesListes = new string [ nbFiles + 1 ]; 
+                    for( unsigned int i = 0; i < nbFiles; i++)
+                    {
+                        filesListes[i].append(_filesListes[i].c_str());
+                    }
+                    filesListes[nbFiles] = option;
+                    nbFiles++;
                 }
-            }else{
-                filesActive[nfiles] = option;
-                nfiles ++;
             }
         }
 
-        if(nfiles > 0 )
+        if( nbFiles > 0 )
         {
-            for( i = 0; i < nfiles; i++ )
+            for( unsigned int i = 0; i < nbFiles; i++ )
             {
 
                 nbLetter = 0;
                 nbLigne = 0;
                 nbWord =0;
-                nameFile = filesActive[i];
-                ifstream file(nameFile.c_str());
-
-                if( file )
+                if(filesListes[i].compare((string)"-") == EQUAL)
                 {
-                                                
                     
-                    currentState = 2;
-                    while ( getline(file, ligne) ) 
+                    while ( getline(cin, ligne) ) 
                     {
                         nbLigne++;
                         count(ligne, currentState, nbWord, nbLetter, maxLingne);
-                            
+                                
                     }
-                        
-                    nbLigne = ( nbLigne )? nbLigne-1 : 0;
+                       
+                    nbLigne = ( nbLigne )? nbLigne - 1 : 0;
                     nbLetter += nbLigne;
                     total[0] += nbLigne;
                     total[1] += nbWord;
@@ -76,43 +126,96 @@
 
                     if( !hasOptions )
                     {
-                        cout << ' '<< nbLigne << ' ' << nbWord << ' ' << nbLetter << ' ' << nameFile << endl;
+                        cout << separator  << nbLigne << separator << nbWord << separator << nbLetter << separator << filesListes[i] << endl;
                     }
                     else
-                    {
+                    {  
+                        
                         if(optionsActive[0])
                         {
-                            cout << ' '<< nbLigne;
+                            cout << separator << nbLigne;
                         }
                         if(optionsActive[1])
                         {
-                            cout << ' ' << nbWord;
+                            cout << separator << nbWord;
                         }
                         if(optionsActive[2])
                         {
-                            cout << ' ' << nbLetter;
+                            cout << separator << nbLetter;
                         }
                         if(optionsActive[3])
                         {
-                            cout << ' ' << maxLingne;
+                            cout << separator << maxLingne;
                         }
-                            cout << ' ' << nameFile << endl;
+                            cout << separator << filesListes[i] << endl;
                     }
-                     
                 }
                 else
                 {
-                    cerr << "ERREUR: Impossible d'ouvrir le fichier" << nameFile << endl;
+                    separator = TAB;
+                    ifstream file(filesListes[i].c_str());
+                    if( file )
+                    {
+                                                    
+                        
+                        currentState = 2;
+                        while ( getline(file, ligne) ) 
+                        {
+                            nbLigne++;
+                            count(ligne, currentState, nbWord, nbLetter, maxLingne);
+                                
+                        }
+                        file.close();        
+                        nbLigne = ( nbLigne )? nbLigne - 1 : 0;
+                        nbLetter += nbLigne;
+                        total[0] += nbLigne;
+                        total[1] += nbWord;
+                        total[2] += nbLetter;
+                        total[3] = ( total[3] < maxLingne )? maxLingne : total[3];
+
+                        if( !hasOptions )
+                        {
+                            cout << separator << nbLigne << separator << nbWord << separator << nbLetter << separator << filesListes[i] << endl;
+                        }
+                        else
+                        {
+                            if(optionsActive[0])
+                            {
+                                cout << separator << nbLigne;
+                            }
+                            if(optionsActive[1])
+                            {
+                                cout << separator << nbWord;
+                            }
+                            if(optionsActive[2])
+                            {
+                                cout << separator << nbLetter;
+                            }
+                            if(optionsActive[3])
+                            {
+                                cout << separator << maxLingne;
+                            }
+                                cout << separator << filesListes[i] << endl;
+                        }
+                        
+                    }
+                    else
+                    {
+                        cerr << "ERREUR: Impossible d'ouvrir le fichier " << filesListes[i] << endl;
+                    }
                 }
+                
+
+                
                     
             }
-            if( nfiles > 1 ){
-                cout << ' '<< total[0] << ' ' << total[1] << ' ' << total[2] << " total" << endl;
+            if( nbFiles > 1 ){
+                cout << separator << total[0] << separator << total[1] << separator << total[2] << " total" << endl;
             }
         }
         else
         {
-                
+            separator = TAB;
             currentState = 2;
             while ( getline(cin, ligne) ) 
             {
@@ -121,30 +224,30 @@
                         
             }
                     
-            nbLigne = ( nbLigne )? nbLigne-1 : 0;
+            nbLigne = ( nbLigne )? nbLigne - 1 : 0;
             nbLetter += nbLigne;
             
             if( !hasOptions )
             {
-                cout << '\t'<< nbLigne << '\t' << nbWord << '\t' << nbLetter << '\t' << nameFile << endl;
+                cout << separator << nbLigne << separator << nbWord << separator << nbLetter << separator << filesListes[i] << endl;
             }
             else
             {
                 if( optionsActive[0] )
                 {
-                    cout << '\t' << nbLigne;
+                    cout << separator << nbLigne;
                 }
                 if(optionsActive[1])
                 {
-                    cout << '\t' << nbWord;
+                    cout << separator << nbWord;
                 }
                 if(optionsActive[2])
                 {
-                    cout << '\t' << nbLetter;
+                    cout << separator << nbLetter;
                 }
                 if(optionsActive[3])
                 {
-                    cout << '\t' << maxLingne;
+                    cout << separator << maxLingne;
                 }
                 cout << endl;
             }
