@@ -1,11 +1,11 @@
 
 options= -Wall -Wextra
-do : count
+do : fibo
 fonctions.o: fonctions.cpp header.h
-	g++ -c ${options} -o fonctions.o -c fonctions.cpp 
+	g++ -c ${options} -o fonctions.o fonctions.cpp 
 main.o: main.cpp header.h 
 	g++ -c ${options}  -o main.o  main.cpp  
-count: main.o fonctions.o
-	g++ -o count main.o fonctions.o
+fibo: main.o fonctions.o
+	g++ -o fibo main.o fonctions.o
 clean:
 	rm -rf *.o
