@@ -8,11 +8,7 @@
 #define NOTOPTION false
     using namespace std;
     
-    /**
-      * fonction qui teste la lettre c 
-      * retourne 1 si la lettre est un separateur 
-      *  0 sinon 
-      * */
+
 
 void help(void)
 {
@@ -84,6 +80,12 @@ bool active_long_option(string option, bool* optionsActive)
 
     return NOTOPTION;
 }
+
+    /**
+      * fonction qui teste la lettre c 
+      * retourne 1 si la lettre est un separateur 
+      *  0 sinon 
+      * */
 bool is_separator (unsigned char c)
 {
 	int status = false;
