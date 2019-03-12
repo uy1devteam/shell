@@ -67,8 +67,7 @@ int main(int argc, char**argv)
                         {
                             if( !active_option(option[j], i, argc, argv, start, end, file ))
                             {
-                                cerr << "prod : option invalide -- \'" << option[j] << '\'' << endl;
-                                return -1;
+                                goto testIfNumber;
                             }
                            
                         }
@@ -77,15 +76,14 @@ int main(int argc, char**argv)
                     {
                         if( !active_option(option[1], i, argc, argv, start, end, file ) )
                         {
-                            cerr << "prod : option invalide -- \'" << option[1] << '\'' << endl;
-                            return -1;
+                            goto testIfNumber;
                         }
                     }
                 }
             }
             else
             {
-    
+testIfNumber:    
                 prod *= convertion( argv[i] );
                 nbOfNb++;
                 
