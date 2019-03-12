@@ -9,7 +9,7 @@ int main(int argc, char**argv)
 {
     bool first = true;
     long  nbOfNb(0); 
-    double max = 0;
+    double min = 0;
     string file;
     string  option;
     char* separator ;
@@ -34,7 +34,7 @@ int main(int argc, char**argv)
                         
                     if( !active_long_option(option, i, argc, argv, file) )
                     {
-                        cerr << "max : option non reconnue  << " << option << " >>" << endl;
+                        cerr << "min : option non reconnue  << " << option << " >>" << endl;
                         return -1;
                     }    
                 }
@@ -48,7 +48,7 @@ int main(int argc, char**argv)
                         {
                             if( !active_option(option[j], i, argc, argv, file ))
                             {
-                                cerr << "max : option invalide -- \'" << option[j] << '\'' << endl;
+                                cerr << "min : option invalide -- \'" << option[j] << '\'' << endl;
                                 return -1;
                             }
                            
@@ -68,12 +68,12 @@ int main(int argc, char**argv)
 testIfNumber :  double nb = convertion( argv[i] );
                 if(first)
                 {
-                    max = nb;
+                    min = nb;
                     first = false;
                 }
                 else
                 {
-                    max = ( nb > max)? nb : max;
+                    min = ( nb < min)? nb : min;
                 }
                 
                 nbOfNb++;
@@ -118,12 +118,12 @@ testIfNumber :  double nb = convertion( argv[i] );
                         double nb = nombre * signe;
                         if(first)
                         {
-                            max = nb;
+                            min = nb;
                             first = false;
                         }
                         else
                         {
-                            max = ( nb > max)? nb : max;
+                            min = ( nb < min)? nb : min;
                         }
                         deg = 0;
                         isNumber = false;
@@ -142,7 +142,7 @@ testIfNumber :  double nb = convertion( argv[i] );
                     }
                     else
                     {
-                        cerr << "max : " << line[k] << " is not a number" << endl;
+                        cerr << "min : " << line[k] << " is not a number" << endl;
                         return -1;
                     }
                     
@@ -165,7 +165,7 @@ testIfNumber :  double nb = convertion( argv[i] );
                 }
                 else
                 {
-                    cerr << "max : " << line[k] << " is not a number" << endl;
+                    cerr << "min : " << line[k] << " is not a number" << endl;
                     return -1;
                 }
                     k++;
@@ -177,11 +177,11 @@ testIfNumber :  double nb = convertion( argv[i] );
                 double nb = nombre * signe;
                 if(first)
                 {
-                    max = nb;
+                    min = nb;
                 }
                 else
                 {
-                    max = ( nb > max)? nb : max;
+                    min = ( nb < min)? nb : min;
                 }
 
             }
@@ -198,12 +198,12 @@ testIfNumber :  double nb = convertion( argv[i] );
     }
     if(file.length() == 0)
     {
-        cout << separator << max << endl;
+        cout << separator << min << endl;
     }
     else
     {
         ofstream output(file.c_str());
-        output<< separator << max << endl;
+        output<< separator << min << endl;
          
     }
     

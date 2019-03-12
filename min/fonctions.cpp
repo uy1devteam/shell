@@ -31,7 +31,7 @@ bool active_option(unsigned char option, int& i, int argc ,char** argv, string& 
         case 'F':
                 if( i == argc)
                 {
-                    cerr << "max : usage option value" << endl;
+                    cerr << "min : usage option value" << endl;
                     exit(EXIT_FAILURE);
                 }
                 else
@@ -57,7 +57,7 @@ bool active_long_option(string option, int& i, int argc ,char** argv, string& fi
     {
         if( i == argc)
         {
-            cerr << "max : usage option value" << endl;
+            cerr << "min : usage option value" << endl;
             exit(EXIT_FAILURE);
         }
         else
@@ -92,7 +92,7 @@ double convertion(char * chaine)
             nombre =  nombre * 10*i +  chaine[i] - 48;
             
         }else{
-            cerr <<"max : " << chaine << " nombre invalide" << endl;
+            cerr <<"min : " << chaine << " nombre invalide" << endl;
             exit(EXIT_FAILURE);
         }
         i++;
@@ -105,7 +105,7 @@ double convertion(char * chaine)
                 
                 
             }else{
-                cerr <<"max : " << chaine << " is not a number" << endl;
+                cerr <<"min : " << chaine << " is not a number" << endl;
                 exit(EXIT_FAILURE);
             }
             i++;
