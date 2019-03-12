@@ -18,8 +18,6 @@ void help(void)
          << "de la suite dans un enterval d'indice le resultat peut etre stocker dans un fichier" << endl
          << " de taille non nulle de caractères délimités par une espace." << endl << endl
          << "Les options ci-dessous permettent de sélectionner les intervalles à afficher," << endl 
-         << "   -f, --first            afficher le nombre de caractères" << endl
-         << "   -s, --second            afficher le nombre de sauts de lignes" << endl
          << "   -F, --file  afficher la largeur maximale d'affichage " << endl
          << "   -S, --start            afficher le nombre de mots" << endl
          << "   -E, --end            afficher le nombre de mots" << endl
@@ -35,32 +33,10 @@ long maximum(long tab[], long length, long end ){
     }
     return (max < end )? end : max;
 }
-bool active_option(unsigned char option, int& i, int argc ,char** argv,long& first, long& seconde, long& start, long& end, string& file )
+bool active_option(unsigned char option, int& i, int argc ,char** argv, long& start, long& end, string& file )
 {
     switch (option)
     {
-        case 'f':
-                if( i == argc)
-                {
-                    cerr << "fibo : usage option value" << endl;
-                    exit(EXIT_FAILURE);
-                }
-                else
-                {
-                    first = convertion(argv[++i]);   
-                }
-            break;
-        case 's':
-                if( i == argc)
-                {
-                    cerr << "fibo : usage option value" << endl;
-                    exit(EXIT_FAILURE);
-                }
-                else
-                {
-                    seconde = convertion(argv[++i]);   
-                }
-            break;
         case 'F':
                 if( i == argc)
                 {
@@ -113,35 +89,9 @@ bool active_option(unsigned char option, int& i, int argc ,char** argv,long& fir
 }
 
 
-bool active_long_option(string option, int& i, int argc ,char** argv,long& first, long& seconde, long& start, long& end, string& file)
+bool active_long_option(string option, int& i, int argc ,char** argv, long& start, long& end, string& file)
 {
     
-    if(option.compare((string)"--first") ==  EQUAL)
-    {
-        if( i == argc)
-        {
-            cerr << "fibo : usage option value" << endl;
-            exit(EXIT_FAILURE);
-        }
-        else
-        {
-            first = convertion(argv[++i]);   
-        }
-        return ISOPTION;
-    }
-
-    if(option.compare((string)"--seconde") ==  EQUAL)
-    {
-        if( i == argc)
-        {
-            cerr << "fibo : usage option value" << endl;
-            exit(EXIT_FAILURE);
-        }
-        else
-        {
-            seconde = convertion(argv[++i]);   
-        }        return ISOPTION;
-    }
 
     if(option.compare((string)"--file") ==  EQUAL)
     {
