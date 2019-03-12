@@ -40,7 +40,7 @@ bool active_option(unsigned char option, int& i, int argc ,char** argv, long& st
         case 'F':
                 if( i == argc)
                 {
-                    cerr << "fibo : usage option value" << endl;
+                    cerr << "harmo : usage option value" << endl;
                     exit(EXIT_FAILURE);
                 }
                 else
@@ -51,7 +51,7 @@ bool active_option(unsigned char option, int& i, int argc ,char** argv, long& st
         case 'S':
                 if( i == argc)
                 {
-                    cerr << "fibo : usage option value" << endl;
+                    cerr << "harmo : usage option value" << endl;
                     exit(EXIT_FAILURE);
                 }
                 else
@@ -59,7 +59,7 @@ bool active_option(unsigned char option, int& i, int argc ,char** argv, long& st
                     start = convertion(argv[++i]);   
                     if(start < 0)
                     {
-                        cerr << "fibo : start doit avoir une valeur positive" << endl;
+                        cerr << "harmo : start doit avoir une valeur positive" << endl;
                         exit(-1);
                     }
                 }
@@ -67,7 +67,7 @@ bool active_option(unsigned char option, int& i, int argc ,char** argv, long& st
         case 'E':
                 if( i == argc)
                 {
-                    cerr << "fibo : usage option value" << endl;
+                    cerr << "harmo : usage option value" << endl;
                     exit(EXIT_FAILURE);
                 }
                 else
@@ -75,7 +75,7 @@ bool active_option(unsigned char option, int& i, int argc ,char** argv, long& st
                     end = convertion(argv[++i]);
                     if(end < 0)
                     {
-                        cerr << "fibo : end doit avoir une valeur positive" << endl;
+                        cerr << "harmo : end doit avoir une valeur positive" << endl;
                         exit(-1);
                     }   
                 }
@@ -97,7 +97,7 @@ bool active_long_option(string option, int& i, int argc ,char** argv, long& star
     {
         if( i == argc)
         {
-            cerr << "fibo : usage option value" << endl;
+            cerr << "harmo : usage option value" << endl;
             exit(EXIT_FAILURE);
         }
         else
@@ -111,14 +111,14 @@ bool active_long_option(string option, int& i, int argc ,char** argv, long& star
     {
         if( i == argc)
         {
-            cerr << "fibo : usage option value" << endl;
+            cerr << "harmo : usage option value" << endl;
             exit(-1);
         }
         else
         {
             start = convertion(argv[++i]);
             if(start < 0){
-                cerr << "fibo : start doit avoir une valeur positive" << endl;
+                cerr << "harmo : start doit avoir une valeur positive" << endl;
                 exit(-1);
             }   
         }
@@ -129,14 +129,14 @@ bool active_long_option(string option, int& i, int argc ,char** argv, long& star
     {
         if( i == argc)
         {
-            cerr << "fibo : usage option value" << endl;
+            cerr << "harmo : usage option value" << endl;
             exit(EXIT_FAILURE);
         }
         else
         {
             end = convertion(argv[++i]);
             if(end < 0){
-                cerr << "fibo : end doit avoir une valeur positive" << endl;
+                cerr << "harmo : end doit avoir une valeur positive" << endl;
                 exit(-1);
             }   
         }
@@ -161,7 +161,7 @@ long convertion(char * chaine)
             nombre =  nombre * 10*i +  chaine[i] - 48;
             
         }else{
-            cerr <<" fibo : " << chaine << " is not a number" << endl;
+            cerr <<" harmo : " << chaine << " is not a number" << endl;
             exit(EXIT_FAILURE);
         }
         i++;

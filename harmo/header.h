@@ -11,7 +11,6 @@
 
     void help( void );
     long convertion(char * chaine);
-    long fibo(long n, long first , long seconde );
     long maximum(long tab[], long length, long end );
     bool active_option(unsigned char option, int& i, int argc ,char** argv, long& start, long& end, string& file );
     bool active_long_option(string option, int& i, int argc ,char** argv, long& start, long& end, string& file);

@@ -9,7 +9,7 @@ int main(int argc, char**argv)
 {
     
     long start(-1),  end(-1), nbOfNb(0); 
-    double sum = 0;
+    double prod = 1;
     string file;
     string  option;
     char* separator ;
@@ -36,7 +36,7 @@ int main(int argc, char**argv)
                         string spacer = argv[i];
                         if( spacer.length() <= 7)
                         {
-                            cerr << "sum : usage option --space=value" << endl;
+                            cerr << "prod : usage option --space=value" << endl;
                             return -1;
                         }
                         else
@@ -53,7 +53,7 @@ int main(int argc, char**argv)
                     }    
                     if( !active_long_option(option, i, argc, argv, start, end, file) )
                     {
-                        cerr << "sum : option non reconnue  << " << option << " >>" << endl;
+                        cerr << "prod : option non reconnue  << " << option << " >>" << endl;
                         return -1;
                     }    
                 }
@@ -67,7 +67,7 @@ int main(int argc, char**argv)
                         {
                             if( !active_option(option[j], i, argc, argv, start, end, file ))
                             {
-                                cerr << "sum : option invalide -- \'" << option[j] << '\'' << endl;
+                                cerr << "prod : option invalide -- \'" << option[j] << '\'' << endl;
                                 return -1;
                             }
                            
@@ -77,7 +77,7 @@ int main(int argc, char**argv)
                     {
                         if( !active_option(option[1], i, argc, argv, start, end, file ) )
                         {
-                            cerr << "sum : option invalide -- \'" << option[1] << '\'' << endl;
+                            cerr << "prod : option invalide -- \'" << option[1] << '\'' << endl;
                             return -1;
                         }
                     }
@@ -86,7 +86,7 @@ int main(int argc, char**argv)
             else
             {
     
-                sum += convertion( argv[i] );
+                prod *= convertion( argv[i] );
                 nbOfNb++;
                 
             }
@@ -100,7 +100,7 @@ int main(int argc, char**argv)
         if(start != -1 && end != -1 )
         {
            if(end < start){
-                cerr << "sum : le debut de l'interval de valeur doit inferieur a la fin" << endl;
+                cerr << "prod : le debut de l'interval de valeur doit inferieur a la fin" << endl;
                 return -1;
             }
             
@@ -112,7 +112,7 @@ int main(int argc, char**argv)
             while(j <= end)
             {
                     
-                sum += j;
+                prod *= j;
                 j++; 
             }
             
@@ -125,13 +125,13 @@ int main(int argc, char**argv)
         {
             if(end < start)
             {
-                cerr << "sum : le debut de l'interval de valeur doit inferieur a la fin" << endl;
+                cerr << "prod : le debut de l'interval de valeur doit inferieur a la fin" << endl;
                 return -1;
             }
             long j = start; 
             while(j <= end)
             {        
-                sum += j;
+                prod *= j;
                 j++; 
             }
             goto suite;
@@ -168,7 +168,7 @@ suite:      string line;
                     {
                         if(isNumber)
                         {
-                            sum += nombre * signe;
+                            prod *= nombre * signe;
                             deg = 0;
                             isNumber = false;
                             deci = 0;
@@ -186,7 +186,7 @@ suite:      string line;
                         }
                         else
                         {
-                            cerr << "sum : " << line[k] << " is not a number" << endl;
+                            cerr << "prod : " << line[k] << " is not a number" << endl;
                             return -1;
                         }
                         
@@ -209,7 +209,7 @@ suite:      string line;
                     }
                     else
                     {
-                        cerr << "sum : " << line[k] << " is not a number" << endl;
+                        cerr << "prod : " << line[k] << " is not a number" << endl;
                         return -1;
                     }
                         k++;
@@ -218,7 +218,7 @@ suite:      string line;
                 if(isNumber)
                 {
                         
-                    sum += nombre * signe;
+                    prod *= nombre * signe;
 
                 }
                 deci = false;
@@ -234,12 +234,12 @@ suite:      string line;
     }
     if(file.length() == 0)
     {
-        cout << separator << sum << endl;
+        cout << separator << prod << endl;
     }
     else
     {
         ofstream output(file.c_str());
-        output<< separator << sum << endl;
+        output<< separator << prod << endl;
          
     }
     

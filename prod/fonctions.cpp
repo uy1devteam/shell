@@ -33,7 +33,7 @@ bool active_option(unsigned char option, int& i, int argc ,char** argv, long& st
         case 'F':
                 if( i == argc)
                 {
-                    cerr << "sum : usage option value" << endl;
+                    cerr << "prod : usage option value" << endl;
                     exit(EXIT_FAILURE);
                 }
                 else
@@ -44,7 +44,7 @@ bool active_option(unsigned char option, int& i, int argc ,char** argv, long& st
         case 'S':
                 if( i == argc)
                 {
-                    cerr << "sum : usage option value" << endl;
+                    cerr << "prod : usage option value" << endl;
                     exit(EXIT_FAILURE);
                 }
                 else
@@ -52,7 +52,7 @@ bool active_option(unsigned char option, int& i, int argc ,char** argv, long& st
                     start = convertion(argv[++i]);   
                     if(start < 0)
                     {
-                        cerr << "sum : start doit avoir une valeur positive" << endl;
+                        cerr << "prod : start doit avoir une valeur positive" << endl;
                         exit(-1);
                     }
                 }
@@ -60,7 +60,7 @@ bool active_option(unsigned char option, int& i, int argc ,char** argv, long& st
         case 'E':
                 if( i == argc)
                 {
-                    cerr << "sum : usage option value" << endl;
+                    cerr << "prod : usage option value" << endl;
                     exit(EXIT_FAILURE);
                 }
                 else
@@ -68,7 +68,7 @@ bool active_option(unsigned char option, int& i, int argc ,char** argv, long& st
                     end = convertion(argv[++i]);
                     if(end < 0)
                     {
-                        cerr << "sum : end doit avoir une valeur positive" << endl;
+                        cerr << "prod : end doit avoir une valeur positive" << endl;
                         exit(-1);
                     }   
                 }
@@ -90,7 +90,7 @@ bool active_long_option(string option, int& i, int argc ,char** argv, long& star
     {
         if( i == argc)
         {
-            cerr << "sum : usage option value" << endl;
+            cerr << "prod : usage option value" << endl;
             exit(EXIT_FAILURE);
         }
         else
@@ -104,14 +104,14 @@ bool active_long_option(string option, int& i, int argc ,char** argv, long& star
     {
         if( i == argc)
         {
-            cerr << "sum : usage option value" << endl;
+            cerr << "prod : usage option value" << endl;
             exit(-1);
         }
         else
         {
             start = convertion(argv[++i]);
             if(start < 0){
-                cerr << "sum : start doit avoir une valeur positive" << endl;
+                cerr << "prod : start doit avoir une valeur positive" << endl;
                 exit(-1);
             }   
         }
@@ -122,14 +122,14 @@ bool active_long_option(string option, int& i, int argc ,char** argv, long& star
     {
         if( i == argc)
         {
-            cerr << "sum : usage option value" << endl;
+            cerr << "prod : usage option value" << endl;
             exit(EXIT_FAILURE);
         }
         else
         {
             end = convertion(argv[++i]);
             if(end < 0){
-                cerr << "sum : end doit avoir une valeur positive" << endl;
+                cerr << "prod : end doit avoir une valeur positive" << endl;
                 exit(-1);
             }   
         }
@@ -160,7 +160,7 @@ double convertion(char * chaine)
             nombre =  nombre * 10*i +  chaine[i] - 48;
             
         }else{
-            cerr <<"sum : " << chaine << " nombre invalide" << endl;
+            cerr <<" prod : " << chaine << " nombre invalide" << endl;
             exit(EXIT_FAILURE);
         }
         i++;
@@ -173,7 +173,7 @@ double convertion(char * chaine)
                 
                 
             }else{
-                cerr <<"sum : " << chaine << " is not a number" << endl;
+                cerr <<"prod : " << chaine << " is not a number" << endl;
                 exit(EXIT_FAILURE);
             }
             i++;
