@@ -7,13 +7,13 @@ using namespace std;
 
 int main(int argc, char**argv)
 {
-    bool isPipe = false;
+    
     long start(-1),  end(-1), first(1) , seconde(2), nbOfNb(0);
     long* numbersListe, *fiboTable;
     string file;
     string  option;
     char* separator ;
-    char t[] = "\t";
+    char t[] = "   ";
     separator = t;
 
 
@@ -111,7 +111,7 @@ int main(int argc, char**argv)
 
     if(nbOfNb > 0)
     {
-        
+suite :        
         if(start != -1 && end != -1 )
         {
            if(end < start){
@@ -153,84 +153,32 @@ int main(int argc, char**argv)
     }
     else
     {
-        if(start != -1 && end != -1 )
+        
+        
+        string line;
+        while(getline(cin,line))
         {
-            if(end < start)
-            {
-                cerr << "fibo : le debut de l'interval de valeur doit inferieur a la fin" << endl;
-                return -1;
-            }
-        }
-        else
-        {
-            isPipe = true;
-            string line;
-            while(getline(cin,line))
+            
+            unsigned int k = 0;
+            bool isNumber = false;
+            long nombre = 0;
+            short signe = POSITIF;
+            unsigned deg = 0;
+            while( k < line.length())
             {
                 
-                unsigned int k = 0;
-                bool isNumber = false;
-                long nombre = 0;
-                short signe = POSITIF;
-                unsigned deg = 0;
-                while( k < line.length())
+                if(line[k] == TIRET)
                 {
-                    
-                    if(line[k] == TIRET)
-                    {
-                        signe = NEGATIF;
-                        k++;
-                        isNumber = true;
-                        deg = 0;
-                        continue;
-                    }
-  
-                    if(line[k] == ' ' || line[k] == '\t')
-                    {
-                        if(isNumber)
-                        {
-                            /* add number to  array of number */
-                            {
-                                long _numbersListe [nbOfNb + 1 ] = {0}, j;
-                                for( j = 0; j < nbOfNb; j++)
-                                {
-                                    _numbersListe[j] = numbersListe[j];
-                                }
-                                numbersListe = new long [ nbOfNb + 1 ]; 
-                                for( j = 0; j < nbOfNb; j++)
-                                {
-                                    numbersListe[j] = _numbersListe[j];
-                                }
-                                numbersListe[nbOfNb] = nombre * signe;
-                                if(numbersListe[nbOfNb]<0){
-                                    cerr << "fibo: les indices doivent etre positif " << numbersListe[nbOfNb] << endl;
-                                    return -1;
-                                }
-                                nbOfNb++;
-                            }
-                            cout << nombre;
-                            deg = 0;
-                            isNumber = false;
-                            signe = POSITIF;
-                            nombre = 0;
-                        }
-                        k++;
-                        continue;
-                    }
-                    if( line[k] > 47 && line[k] <  59){
-                        isNumber = true;    
-                        nombre =  nombre * 10*deg +  line[k] - 48;
-                        deg ++;
-                    }
-                    else
-                    {
-                        cerr <<" fibo : " << line[k] << " is not a number" << endl;
-                        return -1;
-                    }
-                        k++;
-                    
+                    signe = NEGATIF;
+                    k++;
+                    isNumber = true;
+                    deg = 0;
+                    continue;
                 }
-                if(isNumber)
+
+                if(line[k] == ' ' || line[k] == '\t')
+                {
+                    if(isNumber)
                     {
                         /* add number to  array of number */
                         {
@@ -251,30 +199,60 @@ int main(int argc, char**argv)
                             }
                             nbOfNb++;
                         }
-                       
+                        cout << nombre;
+                        deg = 0;
+                        isNumber = false;
+                        signe = POSITIF;
+                        nombre = 0;
                     }
-                
-                deg = 0;
-                isNumber = false;
-                signe = POSITIF;
-                nombre = 0;      
-                k = 0;  
-            }
-            long max = maximum(numbersListe,nbOfNb,end);
-            {
-                long j = 2;
-                fiboTable = new long [ max + 1 ];
-                fiboTable[0] = first;
-                fiboTable[1] = seconde;
-                while(j <= max)
-                {
-                   
-                    fiboTable[j] = fiboTable[j -1] + fiboTable[j-2];
-                    j++; 
+                    k++;
+                    continue;
                 }
-                   
-            }     
-        }        
+                if( line[k] > 47 && line[k] <  59){
+                    isNumber = true;    
+                    nombre =  nombre * 10*deg +  line[k] - 48;
+                    deg ++;
+                }
+                else
+                {
+                    cerr <<" fibo : " << line[k] << " is not a number" << endl;
+                    return -1;
+                }
+                    k++;
+                
+            }
+            if(isNumber)
+                {
+                    /* add number to  array of number */
+                    {
+                        long _numbersListe [nbOfNb + 1 ] = {0}, j;
+                        for( j = 0; j < nbOfNb; j++)
+                        {
+                            _numbersListe[j] = numbersListe[j];
+                        }
+                        numbersListe = new long [ nbOfNb + 1 ]; 
+                        for( j = 0; j < nbOfNb; j++)
+                        {
+                            numbersListe[j] = _numbersListe[j];
+                        }
+                        numbersListe[nbOfNb] = nombre * signe;
+                        if(numbersListe[nbOfNb]<0){
+                            cerr << "fibo: les indices doivent etre positif " << numbersListe[nbOfNb] << endl;
+                            return -1;
+                        }
+                        nbOfNb++;
+                    }
+                    
+                }
+            
+            deg = 0;
+            isNumber = false;
+            signe = POSITIF;
+            nombre = 0;      
+            k = 0;  
+        }
+ goto suite;     
+                
     }
     if(file.length() == 0)
     {
@@ -293,12 +271,12 @@ int main(int argc, char**argv)
             }
         }
 
-        if(!isPipe) cout << endl;
+        cout << endl;
     }
     else
     {
         ofstream output(file.c_str());
-                long i = 0;
+        long i = 0;
         if(nbOfNb > 0)
         {    while( i < nbOfNb){
                 output << separator << fiboTable[numbersListe[i]];
@@ -312,6 +290,7 @@ int main(int argc, char**argv)
                 output<< separator << fiboTable[i];
             }
         }
+        output << endl;
     }
     
      

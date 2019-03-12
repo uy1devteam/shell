@@ -13,54 +13,23 @@
 
 void help(void)
 {
-    cout << "Utilisation : fibo [OPTION value]... " << endl << endl
-         << "Cacule le nieme nombre de la suite de Fibonacci n etant fournie en entré ou les nombres " << endl
-         << "de la suite dans un enterval d'indice le resultat peut etre stocker dans un fichier" << endl
+    cout << "Utilisation : harmo [OPTION value]... " << endl << endl
+         << "Cacule le nieme nombre de la suite Harmonique n etant fournie en entré ou les nombres " << endl
+         << "de la suite dans un enterval d'indice, le plus petit indice etant 0, le resultat peut etre stocker dans un fichier" << endl
          << " de taille non nulle de caractères délimités par une espace." << endl << endl
-         << "Les options ci-dessous permettent de sélectionner les intervalles à afficher," << endl 
-         << "   -f, --first            afficher le nombre de caractères" << endl
-         << "   -s, --second            afficher le nombre de sauts de lignes" << endl
-         << "   -F, --file  afficher la largeur maximale d'affichage " << endl
-         << "   -S, --start            afficher le nombre de mots" << endl
-         << "   -E, --end            afficher le nombre de mots" << endl
+         << "Les options sont : " << endl 
+         << "   -F, --file  specifie le fichier de sortie (mode d'ouverture ecriture) " << endl
+         << "   -S, --start      permet de determiner le debut de l'interval de valeur a calculer " << endl
+         << "   -E, --end      permet de determiner la fin de l'interval de valeur a calculer" << endl
          << "   --space=     pour preciser le separateur par defaut, c'est la tabulation" << endl
          << "   --help     afficher l'aide et quitter" << endl;
          
 }
-long maximum(long tab[], long length, long end ){
-    long max(0), i(0);
-    while(i<length){
-        max = (max < tab[i] )? tab[i] : max;
-        i++;
-    }
-    return (max < end )? end : max;
-}
-bool active_option(unsigned char option, int& i, int argc ,char** argv,long& first, long& seconde, long& start, long& end, string& file )
+
+bool active_option(unsigned char option, int& i, int argc ,char** argv, long& start, long& end, string& file )
 {
     switch (option)
     {
-        case 'f':
-                if( i == argc)
-                {
-                    cerr << "fibo : usage option value" << endl;
-                    exit(EXIT_FAILURE);
-                }
-                else
-                {
-                    first = convertion(argv[++i]);   
-                }
-            break;
-        case 's':
-                if( i == argc)
-                {
-                    cerr << "fibo : usage option value" << endl;
-                    exit(EXIT_FAILURE);
-                }
-                else
-                {
-                    seconde = convertion(argv[++i]);   
-                }
-            break;
         case 'F':
                 if( i == argc)
                 {
@@ -113,35 +82,9 @@ bool active_option(unsigned char option, int& i, int argc ,char** argv,long& fir
 }
 
 
-bool active_long_option(string option, int& i, int argc ,char** argv,long& first, long& seconde, long& start, long& end, string& file)
+bool active_long_option(string option, int& i, int argc ,char** argv, long& start, long& end, string& file)
 {
     
-    if(option.compare((string)"--first") ==  EQUAL)
-    {
-        if( i == argc)
-        {
-            cerr << "fibo : usage option value" << endl;
-            exit(EXIT_FAILURE);
-        }
-        else
-        {
-            first = convertion(argv[++i]);   
-        }
-        return ISOPTION;
-    }
-
-    if(option.compare((string)"--seconde") ==  EQUAL)
-    {
-        if( i == argc)
-        {
-            cerr << "fibo : usage option value" << endl;
-            exit(EXIT_FAILURE);
-        }
-        else
-        {
-            seconde = convertion(argv[++i]);   
-        }        return ISOPTION;
-    }
 
     if(option.compare((string)"--file") ==  EQUAL)
     {
@@ -195,26 +138,48 @@ bool active_long_option(string option, int& i, int argc ,char** argv,long& first
 
     return NOTOPTION;
 }
-long convertion(char * chaine)
+double convertion(char * chaine)
 {
-    unsigned i = 0;
-    long nombre = 0;
+    unsigned long i(0), j(1);
+    double nombre = 0;
     short signe = POSITIF;
+    bool isDecimal = false;
     if(chaine[0] == TIRET)
     {
         signe = NEGATIF;
         i++;
     }
     while(chaine[i] != '\0'){
+        if(chaine[i] == '.' || chaine[i] == ','){
+            isDecimal = true;
+            i++;
+            break;
+        }
         if( chaine[i] > 47 && chaine[i] <  59){
             
             nombre =  nombre * 10*i +  chaine[i] - 48;
             
         }else{
-            cerr <<" fibo : " << chaine << " is not a number" << endl;
+            cerr <<" fibo : " << chaine << " nombre invalide" << endl;
             exit(EXIT_FAILURE);
         }
         i++;
+    }
+    if(isDecimal){
+        while(chaine[i] != '\0'){
+            if( chaine[i] > 47 && chaine[i] <  59){
+                
+                nombre =  nombre  +  (double)(chaine[i] - 48)/( 10*j);
+                
+                
+            }else{
+                cerr <<" fibo : " << chaine << " is not a number" << endl;
+                exit(EXIT_FAILURE);
+            }
+            i++;
+            j++;
+        }
+        
     }
     return nombre * signe;
 }

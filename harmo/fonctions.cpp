@@ -13,14 +13,14 @@
 
 void help(void)
 {
-    cout << "Utilisation : fibo [OPTION value]... [FICHIER]..." << endl << endl
-         << "Cacule le nieme nombre de la suite de Fibonacci n etant fournie en entré ou les nombres " << endl
-         << "de la suite dans un enterval d'indice le resultat peut etre stocker dans un fichier" << endl
+    cout << "Utilisation : harmo [OPTION value]... " << endl << endl
+         << "Cacule le nieme nombre de la suite Harmonique n etant fournie en entré ou les nombres " << endl
+         << "de la suite dans un enterval d'indice, le plus petit indice etant 0, le resultat peut etre stocker dans un fichier" << endl
          << " de taille non nulle de caractères délimités par une espace." << endl << endl
-         << "Les options ci-dessous permettent de sélectionner les intervalles à afficher," << endl 
-         << "   -F, --file  afficher la largeur maximale d'affichage " << endl
-         << "   -S, --start            afficher le nombre de mots" << endl
-         << "   -E, --end            afficher le nombre de mots" << endl
+         << "Les options sont : " << endl 
+         << "   -F, --file  specifie le fichier de sortie (mode d'ouverture ecriture) " << endl
+         << "   -S, --start      permet de determiner le debut de l'interval de valeur a calculer " << endl
+         << "   -E, --end      permet de determiner la fin de l'interval de valeur a calculer" << endl
          << "   --space=     pour preciser le separateur par defaut, c'est la tabulation" << endl
          << "   --help     afficher l'aide et quitter" << endl;
          
