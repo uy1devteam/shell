@@ -195,6 +195,7 @@ bool active_long_option(string option, int& i, int argc ,char** argv,long& first
 
     return NOTOPTION;
 }
+
 long convertion(char * chaine)
 {
     unsigned i = 0;

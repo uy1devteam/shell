@@ -1,8 +1,4 @@
-/*****************************
- * shell 0.21
- * © 2015 - Christophe LOUVET
- ****************************/
-
+#include <iostream>
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -10,22 +6,8 @@
 #include <sys/wait.h>
 #include <errno.h>
 #include <glob.h>
-
-#define TAILLE_HISTO 500
-void traitement_cmd(char *commande);
-typedef struct Environnement
-{
-    char *nom;
-    char *valeur;
-    struct Environnement *next;
-} Environnement ;
-
-
-Environnement *var_environnement=NULL;
-char *arg_list[32],*arg_list2[32];
-char buffer[250];
-int     global_argc, histocount;
-FILE *fichier,*fichier_historique;
+#include "header.h"
+    using namespace std;
 
 void ajout_environnement(char *nom_variable,char *valeur_variable, Environnement *var_environnement)
 {
@@ -125,7 +107,7 @@ int  boucle,increment,longueur;
     }
 }
 
-void gestion_variables(char* arguments[32])
+void gestion_variables(char* arguments[32],char **argv, int& global_argc, Environnement *var_environnement)
 {
 int increment=0;
 
@@ -314,7 +296,7 @@ void traitement_espaces_fin(char *chaine_a_traiter)
 }
 
 
-void traitement_ligne(char* argv[])
+void traitement_ligne(char buffer[250],char *arg_list[32],char *arg_list2[32],char* argv[],Environnement *var_environnement, FILE *fichier, int& global_argc)
 {
     char *cmd=strdup(buffer);
     char *tmp=strtok(cmd,";");
@@ -355,7 +337,7 @@ void traitement_ligne(char* argv[])
             arg_list_temp[0]=strndup(formule,retour);
             arg_list_temp[1]=strdup(formule+retour+1);
             arg_list_temp[2]=NULL;
-            gestion_variables(arg_list_temp,argv);
+            gestion_variables(arg_list_temp,argv, global_argc,var_environnement );
             int test=strcmp(arg_list_temp[0],arg_list_temp[1]);
             free(arg_list_temp[1]);
             free(arg_list_temp[0]);
@@ -427,29 +409,28 @@ void traitement_ligne(char* argv[])
                     {
                         if (detection_else==0)
                         {
-                            traitement_cmd(liste->valeur,argv);
+                            traitement_cmd(liste->valeur,argv,arg_list);
                         }
                     }
                     else
                     {
                         if (detection_else==1)
                         {
-                            traitement_cmd(liste->valeur,argv);
+                            traitement_cmd(liste->valeur,argv,arg_list);
                         }
                     }
                 }
                 liste=liste->next;
             }        
-        }else{
-            traitement_cmd(tmp);
-            tmp=strtok(NULL,";");
         }
+        traitement_cmd(tmp, arg_list, arg_list2);
+        tmp=strtok(NULL,";");
     }
     free(cmd);
 }
 
 
-void traitement_cmd(char *commande)
+void traitement_cmd(char *commande, char *arg_list[32],char *arg_list2[32])
 {
 char *cmd1,*cmd2;
 char *fichier_redirection_sortante,*fichier_redirection_entrante;
@@ -573,45 +554,4 @@ int pipefd[2];
     if (fichier_redirection_sortante!=NULL) free(fichier_redirection_sortante);
     liberation_arguments(arg_list);
     free(cmd1);
-}
-
-
-int main(int argc,char *argv[],char *arge[])
-{
-
-    global_argc=argc;
-    int increment=0;
-    while (arge[increment]!=NULL)
-    {
-        char *valeur=strstr(arge[increment],"=");
-        char *nom=strndup(arge[increment],strlen(arge[increment])-strlen(valeur));
-        ajout_environnement(nom,valeur+1);
-        free(nom);
-        ++increment;
-    }
-    if (argc>1)
-    {
-        fichier=fopen(argv[1],"r");
-        if (fichier==NULL)
-        {
-            fprintf(stderr,"%s: %s\n",argv[1],strerror(errno));
-            exit(EXIT_FAILURE);
-        }
-    }
-    else 
-    {
-        fichier=stdin;
-    }
-    while(!feof(fichier))
-    {
-        if (argc==1) printf("Prompt : ");
-        char *lecture=fgets(buffer,150,fichier);
-        if (lecture==NULL)
-        {
-            exit(EXIT_SUCCESS);
-        }
-        if (buffer[strlen(buffer)-1]=='\n') buffer[strlen(buffer)-1]='\0';
-        traitement_ligne(argv);
-    }
-    return 0;
 }
