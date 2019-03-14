@@ -30,8 +30,6 @@
     void loop(void);
     string cat_many(int nbCh, ...);
     char **split_line(char *line);
-    int execute(char **args);
-    int launch(char **args);
     void  init_history(void);
 
 #endif
