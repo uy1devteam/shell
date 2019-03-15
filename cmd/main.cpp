@@ -32,7 +32,7 @@
     int main(int argc, char **argv)
     {
         // Load config files, if any.
-        init_history();
+    
         
         // Run command loop.
         loop();

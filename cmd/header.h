@@ -12,6 +12,7 @@
 #define TOK_BUFSIZE 64
 #define TOK_DELIM " \t\r\n\a"
 #define RL_BUFSIZE 1024
+#include <vector>
     using namespace std;
 
         /*
@@ -30,6 +31,6 @@
     void loop(void);
     string cat_many(int nbCh, ...);
     char **split_line(char *line);
-    void  init_history(void);
+    int analyse_sep(char * line);    
 
 #endif

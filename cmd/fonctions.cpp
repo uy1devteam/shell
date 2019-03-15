@@ -18,7 +18,7 @@
 
   
    
-    
+    char ** liste = (char **)malloc(200 * sizeof(char*));
         /*
     Builtin function implementations.
     */
@@ -236,16 +236,7 @@
         tokens[position] = NULL;
         return tokens;
     }
-    /**
-     @brief init history
-    */
-    void  init_history(void){
-        using_history();
-        if( read_history(HISTORY_NAME)){
-            write_history(HISTORY_NAME);
-        };
-        stifle_history(HISTORY_MAX_LENGTH);
-    }
+    
         /**
      @brief Read a line of input from stdin.
     @return The line from stdin.
@@ -260,6 +251,125 @@
             append_history(1,HISTORY_NAME);
         return line;
     }
+    int analyse_sep(char * line){
+        size_t i(0),j(0),max = strlen(line),k=0;
+        char  cmd [3000] = {'\0'};
+        char * v;
+        bool neutralise_some = false;
+        bool neutralise_all = false;
+        bool super_neutralise = false;  
+      liste[0]=NULL;
+                  
+        while(i < max){
+            
+            if(line[i] == ';'){
+                if(!neutralise_all){
+                    if(!neutralise_some){
+                        if(super_neutralise){
+                            super_neutralise = false;
+                        }
+                        else
+                        {   
+
+save_commande:             
+                            cmd[j] ='\0';
+                            commande cmds(cmd);
+                            cmds.execute();
+                            k++;                          
+                            
+                            cmd[0]='\0';
+                            j=0;
+                            goto pass;
+                        }
+                    }
+                }
+            }
+
+           
+            cmd[j]= line[i];    
+            j++;
+            if(line[i] == '\"'){
+
+                if(neutralise_all){
+append_cote:        
+                    
+                    super_neutralise = false;
+                    goto pass;
+                }
+
+                if(neutralise_some){
+                  if(super_neutralise){
+                      goto append_cote;
+                  } 
+                  neutralise_some = false;
+                  goto pass;  
+                }else
+                {
+                    if(super_neutralise){
+                      goto append_cote;
+                    }
+                    neutralise_all = false;
+                    super_neutralise = false;
+                    neutralise_some = true;
+                    goto pass;
+                }
+                
+            }
+
+            if(line [i] == '\''){
+                if(neutralise_some){
+append_simple_cote: 
+                    
+                    super_neutralise = false;
+                    goto pass;
+                }
+
+                if(neutralise_all){
+                    neutralise_all = false;
+                    goto pass;
+                }
+                else
+                {
+                    if(super_neutralise){
+                       goto append_simple_cote;     
+                    }
+                    neutralise_all = true;
+                    neutralise_some = false;
+                    super_neutralise = false;
+                    goto pass;
+                }
+                
+            }
+
+            if(line[i]=='\\'){
+                if(neutralise_all){
+                    
+                    goto pass;
+                }
+                if(neutralise_some){
+                    if(super_neutralise){
+                        
+                        super_neutralise = false;
+                        goto pass;
+                    }
+                    super_neutralise = true;
+                    goto pass;
+                }
+
+                if(super_neutralise){
+                    
+                    super_neutralise = false;
+                    goto pass;
+                }
+                super_neutralise = true;
+                goto pass;
+            }
+pass:       i++;     
+        }
+     
+    if(j != 0)goto save_commande;
+    return 1;  
+}
     /**
      @brief Loop getting input and executing it.
     */
@@ -269,13 +379,26 @@
   
     int status;
 
-
+    using_history();
+    if( read_history(HISTORY_NAME)){
+        write_history(HISTORY_NAME);
+    };
+    stifle_history(HISTORY_MAX_LENGTH);
  
     do {
         line = read_line();
-        commandes cmds(line);
-        status = cmds.execute_all();
-
+        
+        
+        
+        
+       
+        commandes cmds;
+      
+        
+            status = analyse_sep(line);    
+          
+            
+        
         free(line);
     
     } while (status);
