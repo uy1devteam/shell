@@ -11,6 +11,7 @@
 #include <readline/history.h>
 #include "header.h"
 #include "commande.h"
+#include "commandes.h"
 
     using namespace std;
     
@@ -272,8 +273,8 @@
  
     do {
         line = read_line();
-        commande cmd(line);
-        status = cmd.execute();
+        commandes cmds(line);
+        status = cmds.execute_all();
 
         free(line);
     
