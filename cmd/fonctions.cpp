@@ -1,14 +1,5 @@
-#include <sys/wait.h>
-#include <sys/types.h>
-#include <unistd.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
+
 #include <iostream>
-#include <cstdarg>
-#include <string>
-#include <readline/readline.h>
-#include <readline/history.h>
 #include "header.h"
 #include "commande.h"
 #include "commandes.h"
@@ -17,8 +8,8 @@
     
 
   
-   
-    char ** liste = (char **)malloc(200 * sizeof(char*));
+
+    char * liste [512];
         /*
     Builtin function implementations.
     */
@@ -272,12 +263,13 @@
                         {   
 
 save_commande:             
-                            cmd[j] ='\0';
-                            commande cmds(cmd);
-                            cmds.execute();
+                            
+                            line[i] = '\0';
+                            liste[k] = line;
+                            line = line + i +1;
                             k++;                          
                             
-                            cmd[0]='\0';
+                            
                             j=0;
                             goto pass;
                         }
@@ -286,7 +278,7 @@ save_commande:
             }
 
            
-            cmd[j]= line[i];    
+          
             j++;
             if(line[i] == '\"'){
 
@@ -370,6 +362,7 @@ pass:       i++;
     if(j != 0)goto save_commande;
     return 1;  
 }
+
     /**
      @brief Loop getting input and executing it.
     */
@@ -396,7 +389,13 @@ pass:       i++;
       
         
             status = analyse_sep(line);    
-          
+            unsigned int i(0);
+            while(liste[i]!=NULL){
+                commande cmd(liste[i]);
+                cmds.append(cmd);
+                i++;
+            }
+        cmds.execute_all();    
             
         
         free(line);

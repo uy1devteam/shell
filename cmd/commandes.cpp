@@ -1,10 +1,4 @@
-#include <string.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <sys/wait.h>
-#include <errno.h>
-#include <glob.h>
+
 #include <iostream>
 #include <string>
 #include "header.h"
@@ -97,28 +91,6 @@
     }
     
 
-    bool is_meta(char c){
-        switch(c){
-            case '$':
-            break;
-            case '\"':
-            break;
-            case '\\':
-            break;
-            case ';':
-            break;
-            case '>':
-            break;
-            case '<':
-            break;
-            case '\'':
-            break;
-            case '|':
-            break;
-            case '(':
-            break;
-        }
-    }
     string analyse( char * line){
         size_t i(0);
         string cmd;
@@ -205,9 +177,5 @@ pass:       i++;
         }
         return cmd;
     }
-char * cover_char_tab(char c, char * r){
-    r[0]=c;
-    r[1]='\0';
-    return r;
-}
+
     
