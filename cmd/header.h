@@ -43,6 +43,6 @@
     void loop(void);
     string cat_many(int nbCh, ...);
     char **split_line(char *line);
-    int analyse_sep(char * line);    
+    char * copier(char * word);   
 
 #endif

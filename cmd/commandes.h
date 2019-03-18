@@ -7,10 +7,10 @@
 
     class commandes{
         vector <commande> liste;
-        
         public:
-            commandes();
-                        commandes(unsigned int ,commande * );
+            ~commandes();
+            commandes(char *);
+            commandes(unsigned int ,commande * );
             void affiche(void);
             int copy( unsigned int,const commande *);
             int append(commande );

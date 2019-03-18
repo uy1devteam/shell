@@ -10,9 +10,130 @@
 
     
     
-    commandes::commandes(){
+    commandes::~commandes(){
+        
+    }
+    commandes::commandes(char * line){
+        size_t i(0),j(0),k=0,max=strlen(line);
+     
+        char * v;
+        bool neutralise_some = false;
+        bool neutralise_all = false;
+        bool super_neutralise = false;  
+                  
+        while(i < max){
+           
+            if(line[i] == ';'){
+                if(!neutralise_all){
+                    if(!neutralise_some){
+                        if(super_neutralise){
+                            super_neutralise = false;
+                        }
+                        else
+                        {   
 
-    };
+save_commande:             
+                            
+                            line[i] = '\0';
+                            
+                            commande t(copier(line));
+                            liste.push_back(t);
+                            line = line + i +1;
+                            k++;                          
+                            
+                            
+                            j=0;
+                            goto pass;
+                        }
+                    }
+                }
+            }
+
+           
+          
+            j++;
+            if(line[i] == '\"'){
+
+                if(neutralise_all){
+append_cote:        
+                    
+                    super_neutralise = false;
+                    goto pass;
+                }
+
+                if(neutralise_some){
+                  if(super_neutralise){
+                      goto append_cote;
+                  } 
+                  neutralise_some = false;
+                  goto pass;  
+                }else
+                {
+                    if(super_neutralise){
+                      goto append_cote;
+                    }
+                    neutralise_all = false;
+                    super_neutralise = false;
+                    neutralise_some = true;
+                    goto pass;
+                }
+                
+            }
+
+            if(line [i] == '\''){
+                if(neutralise_some){
+append_simple_cote: 
+                    
+                    super_neutralise = false;
+                    goto pass;
+                }
+
+                if(neutralise_all){
+                    neutralise_all = false;
+                    goto pass;
+                }
+                else
+                {
+                    if(super_neutralise){
+                       goto append_simple_cote;     
+                    }
+                    neutralise_all = true;
+                    neutralise_some = false;
+                    super_neutralise = false;
+                    goto pass;
+                }
+                
+            }
+
+            if(line[i]=='\\'){
+                if(neutralise_all){
+                    
+                    goto pass;
+                }
+                if(neutralise_some){
+                    if(super_neutralise){
+                        
+                        super_neutralise = false;
+                        goto pass;
+                    }
+                    super_neutralise = true;
+                    goto pass;
+                }
+
+                if(super_neutralise){
+                    
+                    super_neutralise = false;
+                    goto pass;
+                }
+                super_neutralise = true;
+                goto pass;
+            }
+pass:       i++;     
+        }
+     
+    if(j != 0)goto save_commande;
+      
+}
     commandes::commandes(unsigned int argc,commande* argv){
 
         unsigned int i = 0;
@@ -58,13 +179,14 @@
     int commandes::execute_all(){
             
         vector<commande>::iterator il ;
-
+        int status = 1;
         for (il = liste.begin() ; il != liste.end() ; il++)
         {
-            il->execute();
+            status =  il->execute();
+            if(!status)break;
         }
         
-        return 1;
+        return status;
     }
     int commandes::replace(unsigned int st, unsigned int end, commande arg){
         liste.insert(liste.begin(),st-end+1,arg);

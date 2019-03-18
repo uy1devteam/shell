@@ -302,23 +302,23 @@
         position = 0;
         arg = strtok(listePipe[i], TOK_DELIM);
 
-    while (arg != NULL) {
-        args[i][position] = arg;
-        position++;
+        while (arg != NULL) {
+            args[i][position] = arg;
+            position++;
 
-        if (position >= bufsize) {
-        bufsize += TOK_BUFSIZE;
-        args_backup = args;
-        args = (char ***)realloc(args, bufsize * sizeof(char***));
-        if (!args) {
-            free(args_backup);
-            cerr << "msh: allocation error" << endl;
-            exit(EXIT_FAILURE);
-        }
-        }
+            if (position >= bufsize) {
+                bufsize += TOK_BUFSIZE;
+                args_backup = args;
+                args = (char ***)realloc(args, bufsize * sizeof(char***));
+                if (!args) {
+                    free(args_backup);
+                    cerr << "msh: allocation error" << endl;
+                    exit(EXIT_FAILURE);
+                }
+            }
 
-        arg = strtok(NULL, TOK_DELIM);
-    }
+            arg = strtok(NULL, TOK_DELIM);
+        }
         args[i][position] = NULL;
         i++;
     }
@@ -370,7 +370,9 @@
         
         for (size_t j = 0; j < num_builtins(); j++) {
             if (strcmp(args[cmd][0], (const char *)builtin_str[j]) == 0) {
-                    return (*builtin_func[j])(args[cmd]);
+                (*builtin_func[j])(args[cmd]);
+                exit(EXIT_SUCCESS);
+                goto ours_commandes;
             }
         } 
 		if (execvp( args[cmd][0], args[cmd]) == -1){
@@ -398,7 +400,7 @@ ours_commandes:
 		wait(NULL); 
 }
 commande::commande(char * line){
-        size_t i(0),j(0),max = strlen(line);
+        size_t i(0),j(0), max = strlen(line);
         listePipe = (char **)malloc(512 * sizeof(char**));
         char  cmd [1024] = {'\0'};
         char * v;
@@ -418,7 +420,7 @@ commande::commande(char * line){
                         else
                         {   
 
-save_commande:              cout << line << endl;
+save_commande:              
                             line[i] ='\0';
                             listePipe[length] = line;
                             line = line + i + 1;

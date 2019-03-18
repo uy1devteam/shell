@@ -9,7 +9,6 @@
 
   
 
-    char * liste [512];
         /*
     Builtin function implementations.
     */
@@ -198,7 +197,7 @@
     */
     char **split_commande(char* line){
         int bufsize = TOK_BUFSIZE, position = 0;
-        char **tokens = (char **)malloc(bufsize * sizeof(char*));
+        char **tokens = (char **)calloc(bufsize , sizeof(char*));
         char *token, **tokens_backup;
 
         if (!tokens) {
@@ -228,9 +227,9 @@
         return tokens;
     }
     
-        /**
-     @brief Read a line of input from stdin.
-    @return The line from stdin.
+    /**
+     * @brief Read a line of input from stdin.
+     * @return The line from stdin.
     */
     char *read_line(void)
     {
@@ -242,127 +241,27 @@
             append_history(1,HISTORY_NAME);
         return line;
     }
-    int analyse_sep(char * line){
-        size_t i(0),j(0),max = strlen(line),k=0;
-        char  cmd [3000] = {'\0'};
-        char * v;
-        bool neutralise_some = false;
-        bool neutralise_all = false;
-        bool super_neutralise = false;  
-      liste[0]=NULL;
-                  
-        while(i < max){
-            
-            if(line[i] == ';'){
-                if(!neutralise_all){
-                    if(!neutralise_some){
-                        if(super_neutralise){
-                            super_neutralise = false;
-                        }
-                        else
-                        {   
-
-save_commande:             
-                            
-                            line[i] = '\0';
-                            liste[k] = line;
-                            line = line + i +1;
-                            k++;                          
-                            
-                            
-                            j=0;
-                            goto pass;
-                        }
-                    }
-                }
-            }
-
-           
-          
-            j++;
-            if(line[i] == '\"'){
-
-                if(neutralise_all){
-append_cote:        
-                    
-                    super_neutralise = false;
-                    goto pass;
-                }
-
-                if(neutralise_some){
-                  if(super_neutralise){
-                      goto append_cote;
-                  } 
-                  neutralise_some = false;
-                  goto pass;  
-                }else
-                {
-                    if(super_neutralise){
-                      goto append_cote;
-                    }
-                    neutralise_all = false;
-                    super_neutralise = false;
-                    neutralise_some = true;
-                    goto pass;
-                }
-                
-            }
-
-            if(line [i] == '\''){
-                if(neutralise_some){
-append_simple_cote: 
-                    
-                    super_neutralise = false;
-                    goto pass;
-                }
-
-                if(neutralise_all){
-                    neutralise_all = false;
-                    goto pass;
-                }
-                else
-                {
-                    if(super_neutralise){
-                       goto append_simple_cote;     
-                    }
-                    neutralise_all = true;
-                    neutralise_some = false;
-                    super_neutralise = false;
-                    goto pass;
-                }
-                
-            }
-
-            if(line[i]=='\\'){
-                if(neutralise_all){
-                    
-                    goto pass;
-                }
-                if(neutralise_some){
-                    if(super_neutralise){
-                        
-                        super_neutralise = false;
-                        goto pass;
-                    }
-                    super_neutralise = true;
-                    goto pass;
-                }
-
-                if(super_neutralise){
-                    
-                    super_neutralise = false;
-                    goto pass;
-                }
-                super_neutralise = true;
-                goto pass;
-            }
-pass:       i++;     
+    /**
+     * @brief copie the item of an array of char in to new array of char
+     * @params line the array to copie item
+     * @return the pointer on new array
+    */
+    char * copier(char * word){
+        size_t length = strlen(word),i=0;
+        char * copie = (char *)calloc((length+1),sizeof(char ));
+        if (!copie) {
+            fprintf(stderr,"msh: allocation error\n");
+            exit(EXIT_FAILURE);
         }
-     
-    if(j != 0)goto save_commande;
-    return 1;  
-}
-
+        copie[length] = '\0';
+        
+        while(i < length){
+            
+            copie[i] = word[i];
+            i++;
+        }
+        return copie;
+    }
     /**
      @brief Loop getting input and executing it.
     */
@@ -385,17 +284,9 @@ pass:       i++;
         
         
        
-        commandes cmds;
+        commandes cmds(line);
       
-        
-            status = analyse_sep(line);    
-            unsigned int i(0);
-            while(liste[i]!=NULL){
-                commande cmd(liste[i]);
-                cmds.append(cmd);
-                i++;
-            }
-        cmds.execute_all();    
+        status = cmds.execute_all();    
             
         
         free(line);
@@ -404,3 +295,21 @@ pass:       i++;
 
     }
 
+    bool is_separator(char c){
+
+        switch (c)
+        {
+            case '\n':
+            case ' ':
+            case '\t':
+            case '\a':
+            case '\r':
+            case '(':
+            case ')':
+                return true;        
+            break;
+            default:
+                return false;
+                break;
+        }
+    }
