@@ -44,5 +44,5 @@
     string cat_many(int nbCh, ...);
     char **split_line(char *line);
     char * copier(char * word);   
-
+    bool is_separator(char c);
 #endif

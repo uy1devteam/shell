@@ -287,42 +287,220 @@
     
     int commande::calcule_args()
     {
-    int bufsize = 512, position = 0;
-    args = (char ***)malloc(bufsize * sizeof(char***));
-    char *arg, ***args_backup;
-    size_t i = 0;
-    
-    if (!args) {
-        cerr << "msh: allocation error" << endl;
-        exit(EXIT_FAILURE);
-    }
-
-    while(i < length){
-        args[i] = (char **)malloc(bufsize * sizeof(char**));
-        position = 0;
-        arg = strtok(listePipe[i], TOK_DELIM);
-
-        while (arg != NULL) {
-            args[i][position] = arg;
-            position++;
-
-            if (position >= bufsize) {
-                bufsize += TOK_BUFSIZE;
-                args_backup = args;
-                args = (char ***)realloc(args, bufsize * sizeof(char***));
-                if (!args) {
-                    free(args_backup);
-                    cerr << "msh: allocation error" << endl;
-                    exit(EXIT_FAILURE);
-                }
-            }
-
-            arg = strtok(NULL, TOK_DELIM);
+        int bufsize = 512, position = 0;
+        args = (char ***)calloc(bufsize , sizeof(char**));
+        char *arg, ***args_backup;
+        size_t i = 0;
+        
+        if (!args) {
+            cerr << "msh: allocation error" << endl;
+            exit(EXIT_FAILURE);
         }
-        args[i][position] = NULL;
-        i++;
+
+        while(i < length){
+            args[i] = (char **)calloc(bufsize , sizeof(char*));
+            position = 0;
+            
+            size_t j(0),k=0, max = strlen(listePipe[i]);
+            string cmd,r(">"),b("\\"),c("\""),sc("'");
+
+            bool neutralise_some = false;
+            bool neutralise_all = false;
+            bool super_neutralise = false;
+            bool in_redirection = false;
+            bool out_write_redirection = false;
+            bool out_append_redirection;
+            bool etat1 = false;//argument
+            bool etat2 = true; //separator
+            
+            while (j < max) {
+                if( is_separator(listePipe[i][j])){
+                    //analyse separator
+                    cout << "humn\n";
+                    if(listePipe[i][j] == '>'){
+                        if(neutralise_all || neutralise_some){
+                            //append
+                            cmd += r;
+                        }
+                        else
+                        {
+                            if(super_neutralise){
+                                //append
+                                super_neutralise =  false;
+                            }
+                            else
+                            {
+                                if(out_write_redirection){
+                                    if(out_append_redirection){
+                                        perror("msh: syntaxe error ");
+                                        exit(EXIT_FAILURE);
+                                    }
+                                    out_append_redirection = true;
+                                    out_write_redirection = false;
+                                    out_write_redirection = true;
+                                    listePipe[i][j] = '\0';
+                                    args[i][position -1] = copier(">>");
+                                    listePipe[i] = listePipe[i] + j + 1;
+                                    
+                                }
+                                else{
+                                   
+                                    out_write_redirection = true;
+                                    listePipe[i][j] = '\0';
+                                    args[i][position] = copier(listePipe[i]);
+                                    listePipe[i] = listePipe[i] + j + 1;
+                                    
+                                }
+                                
+                            }
+                        }
+                        
+                    }
+                    if(listePipe[i][j] == '\"'){
+                        if(neutralise_all){
+        append_cote:        cmd+= c;
+                            
+                            super_neutralise = false;
+                            goto pass;
+                        }
+
+                        if(neutralise_some){
+                        if(super_neutralise){
+                            goto append_cote;
+                        } 
+                        neutralise_some = false;
+                        goto pass;  
+                        }else
+                        {
+                            if(super_neutralise){
+                            goto append_cote;
+                            }
+                            neutralise_all = false;
+                            super_neutralise = false;
+                            neutralise_some = true;
+                            goto pass;
+                        }
+                        
+                    }
+
+                    if(listePipe [i][j] == '\''){
+                        if(neutralise_some){
+        append_simple_cote: cmd+=sc;
+                            
+                            super_neutralise = false;
+                            goto pass;
+                        }
+
+                        if(neutralise_all){
+                            neutralise_all = false;
+                            goto pass;
+                        }
+                        else
+                        {
+                            if(super_neutralise){
+                            goto append_simple_cote;     
+                            }
+                            neutralise_all = true;
+                            neutralise_some = false;
+                            super_neutralise = false;
+                            goto pass;
+                        }
+                        
+                    }
+
+                    if(listePipe[i][j]=='\\'){
+                        if(neutralise_all){
+                            cmd+=b;
+                            goto pass;
+                        }
+                        if(neutralise_some){
+                            if(super_neutralise){
+                                cmd+=b;
+                                super_neutralise = false;
+                                goto pass;
+                            }
+                            super_neutralise = true;
+                            goto pass;
+                        }
+
+                        if(super_neutralise){
+                            cmd.append((const char *)"\\");
+                            super_neutralise = false;
+                            goto pass;
+                        }
+                        super_neutralise = true;
+                        goto pass;
+                    }
+
+
+                    if(etat1){
+                        etat1 = false;
+                        etat2 = true;
+                        //append argument
+                        
+                        args[i][position] = copier((char *)cmd.c_str());
+                        position++;
+                        cmd.clear();
+                        if (position >= bufsize) {
+                        bufsize += TOK_BUFSIZE;
+                        args_backup = args;
+                        args = (char ***)realloc(args, bufsize * sizeof(char***));
+                        if (!args) {
+                            free(args_backup);
+                            cerr << "msh: allocation error" << endl;
+                            exit(EXIT_FAILURE);
+                        }
+                    }
+
+                
+                    }
+                    else
+                    {
+
+                    }
+                }
+                else
+                {
+                    if(etat2){
+                        etat2 = false;
+                        etat1 = true;
+                    }
+                    else
+                    {
+
+                    }
+                    cmd.push_back(listePipe[i][j]);
+                }
+
+               
+                    
+        pass:       j++;     
+                
+
+                
+            }
+     
+        if(cmd.length()!=0){
+              
+            args[i][position] = copier((char *)cmd.c_str());
+                        position++;
+                        cmd.clear();
+                        if (position >= bufsize) {
+                        bufsize += TOK_BUFSIZE;
+                        args_backup = args;
+                        args = (char ***)realloc(args, bufsize * sizeof(char***));
+                        if (!args) {
+                            free(args_backup);
+                            cerr << "msh: allocation error" << endl;
+                            exit(EXIT_FAILURE);
+                        }
+                    }
+        }
+        i++;    
     }
     
+            
+           
     
     }
 

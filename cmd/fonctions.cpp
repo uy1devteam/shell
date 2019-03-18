@@ -306,6 +306,9 @@
             case '\r':
             case '(':
             case ')':
+            case '>':
+            case '<':
+        
                 return true;        
             break;
             default:
