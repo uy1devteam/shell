@@ -11,8 +11,15 @@
         int input;
         pid_t pid;
         int command_pipe[2];
+        bool has_error = false;
+        string erro_message;
+  
+        string out_put;
+        string in_put;
+        streambuf *coutbuf;
+        streambuf *cinbuf;
         public:
-            
+
             unsigned int length;
             commande();
             
