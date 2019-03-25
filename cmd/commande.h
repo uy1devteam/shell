@@ -1,8 +1,7 @@
 #ifndef COMMANDE_H_INCLUDES
 #define COMMANDE_H_INCLUDES
-#include <string>
 
-    using namespace std;
+
 
     class commande{
         char *** args;
@@ -12,10 +11,10 @@
         pid_t pid;
         int command_pipe[2];
         bool has_error = false;
-        string erro_message;
+        std::string erro_message;
   
-        string out_put;
-        string in_put;
+        std::string out_put;
+        std::string in_put;
         streambuf *coutbuf;
         streambuf *cinbuf;
         public:
