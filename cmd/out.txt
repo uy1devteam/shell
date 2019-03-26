@@ -1,0 +1,14 @@
+commande.cpp
+commande.h
+commande.o
+commandes.cpp
+commandes.h
+commandes.o
+fonctions.cpp
+fonctions.o
+header.h
+main.cpp
+main.o
+Makefile
+out.txt
+shell
