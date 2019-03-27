@@ -7,7 +7,6 @@
     using namespace std;
     
 
-  
 
         /*
     Builtin function implementations.
@@ -165,10 +164,13 @@
         return cat_many(8,"\e[032;1m",username.c_str(),"\e[33;0m",":","\033[34;1m",path.c_str(),"\033[47;0m","$ ");
         
     }
+          
     int num_builtins() {
     return sizeof(builtin_str) / sizeof(char *);
     }
-
+    int num_builtinprocs() {
+        return sizeof(builtinproc_str) / sizeof(char *);
+    }
     
     /*
     @brief cat_many cat str argument in to one string 

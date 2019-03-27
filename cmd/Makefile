@@ -1,5 +1,5 @@
 lib= -lreadline
-options= -Wall -Wextra
+options= -Wall -Wextra -g
 do : shell
 commandes.o: commandes.cpp commandes.h commande.h header.h
 	g++ -c ${options} -o commandes.o commandes.cpp

@@ -1,7 +1,9 @@
 #ifndef COMMANDE_H_INCLUDES
 #define COMMANDE_H_INCLUDES
-
-
+#define APPEND "a"
+#define CREATE "w"
+#define SHELL 0
+#define FILLE 2
 
     class commande{
         char *** args;
@@ -14,7 +16,9 @@
         std::string erro_message;
   
         std::string out_put;
+        std::string out_put_mod;
         std::string in_put;
+        int in_put_mod;
         streambuf *coutbuf;
         streambuf *cinbuf;
         public:
@@ -41,14 +45,6 @@
             int launch();
             int execute();
     };
-          /*
-    List of builtin commands, followed by their corresponding functions.
-    */
-        static char *builtin_str[] = {
-            "cd",
-            "help",
-            "exit",
-            "history"
-            };
+    
 
 #endif

@@ -45,4 +45,16 @@
     char **split_line(char *line);
     char * copier(char * word);   
     bool is_separator(char c);
+    int num_builtinprocs();
+      
+          /*
+    List of builtin commands, followed by their corresponding functions.
+    */
+     static   char *builtin_str[] = {
+            "cd",
+            "help",
+            "exit",
+            "history"
+            };
+    static     char *builtinproc_str[] = {"cd"}; 
 #endif

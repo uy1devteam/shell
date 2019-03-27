@@ -12,19 +12,23 @@
 
  
     #define READ  0
-    #define WRITE 1   
+    #define WRITE 1
+
+    
       /*
     List of builtin commands, followed by their corresponding functions.
     */
 
-   
+
         int (*builtin_func[]) (char **) = {
             &cd,
             &help,
             &_exit,
             &history
         };
-    
+        int (*builtinproc_func[]) (char **) = {
+            &cd,
+        };
     commande::commande(){
         length = 0;
         has_pipe = false;
@@ -210,12 +214,38 @@
     pid = fork();
     if (pid == 0) {
         // Child process
-                
+        if(!out_put.empty()){
+            
+            if( (long)freopen(out_put.c_str(),out_put_mod.c_str(),stdout) == -1){
+                _exit(EXIT_FAILURE);
+            }
+            out_put.clear();
+        }
+        if(!in_put.empty()){
+            if(in_put_mod == FILLE){
+                if( (long)freopen(in_put.c_str(),"r",stdin) == -1){
+                    _exit(EXIT_FAILURE);
+                }else{
+                    //interactive saisie
+                }    
+                in_put.clear();
+            }
+            
+        }
+        for (int j = 0; j < num_builtins(); j++) {
+            if (strcmp(args[0][0], (const char *)builtin_str[j]) == 0) {
+
+                int status =    (*builtin_func[j])(args[0]);
+                    
+                _exit(status);                   
+            }
+        }                
         if (execvp(args[0][0], args[0]) == -1) {
         perror("msh");
+        _exit(EXIT_FAILURE);
         }
         
-        _exit(EXIT_FAILURE);
+        _exit(EXIT_SUCCESS);
     } else if (pid < 0) {
         // Error forking
         perror("msh");
@@ -224,6 +254,7 @@
         do {
         waitpid(pid, &status, WUNTRACED);
         } while (!WIFEXITED(status) && !WIFSIGNALED(status));
+        //recupe status of previous execution here
     }
 
     return 1;
@@ -276,17 +307,70 @@
             size_t k = 0;
             while(args[0][k]){
                 
-                if(strcmp(args[0][k],">") == EQUAL){
+                if(strcmp(args[0][k],"<") == EQUAL || strcmp(args[0][k],"<<") == EQUAL){
                     
                     if(!args[0][k+1]){
-                                //repport the error
-                        cout << erro_message.c_str() << endl; 
-                        return 1;       
+                       
+                        cerr << "msh : error on " << args[0][k] << endl;                    
+                    
+                        
+       
+                    }else
+                    {
+                        in_put.clear();
+                        in_put.append(args[0][k+1]);
+                        if(strcmp(args[0][k],"<") == EQUAL){
+                            in_put_mod = FILLE;
+                        }else{
+                            in_put_mod = SHELL;
+                        } 
+                        free(args[0][k + 1]);
+                        while(args[0][k+2] != NULL){
+                            args[0][k] = args[0][k+2];
+                            k++;
+                        }
+                    
+                           
                     }
                     
-                    out_put.clear();
+                    
+                    
+                 
+                    //free(args[0][k]);
+                    args[0][k] = NULL;
+                    break;
+                }
+                k++;
+            }
+            k = 0;
+            out_put.clear();
+            while(args[0][k]){
+                
+                if(strcmp(args[0][k],">") == EQUAL || strcmp(args[0][k],">>") == EQUAL){
+                     
+                    if(!args[0][k+1]){
+                                //repport the error
+                       
+                        if(!in_put.empty()){
+                            out_put = in_put;
+                            args[0][k]  = NULL;
+                            break;
+                        }
+                        else{
+                            cout << erro_message.c_str() << endl; 
+                            return 1;
+                        }
+                               
+                    }
+                    
+                    
+
                     out_put.append(args[0][k+1]);
-                  
+                    if(strcmp(args[0][k],">") == EQUAL){
+                        out_put_mod.append(CREATE);
+                    }else{
+                        out_put_mod.append(APPEND);
+                    }
                  
                     //free(args[0][k]);
                     free(args[0][k + 1]);
@@ -300,52 +384,55 @@
                 }
                 k++;
             }
-            k = 0;
-            while(args[0][k]){
-                if(strcmp(args[0][k],">>") == EQUAL){
-                    if(!args[0][k+1]){
-                                //repport the error
-                        cout << erro_message.c_str() << endl; 
-                        return 1;       
+            k=0;
+            if(out_put.empty()){
+                while(args[0][k]){
+                    
+                    if(strcmp(args[0][k],">") == EQUAL || strcmp(args[0][k],">>") == EQUAL){
+                       
+                        if(!args[0][k+1]){
+                                    //repport the error
+                            cout << erro_message.c_str() << "msh: error on " << args[0][k]<< endl; 
+                            return 1;       
+                        }
+                        
+                        out_put.clear();
+                        out_put.append(args[0][k+1]);
+                        if(strcmp(args[0][k],">") == EQUAL){
+                            out_put_mod.append(CREATE);
+                        }else{
+
+                            out_put_mod.append(APPEND);
+                        }
+                    
+                        //free(args[0][k]);
+                        free(args[0][k + 1]);
+                        while(args[0][k+2] != NULL){
+                            args[0][k] = args[0][k+2];
+                            k++;
+                        }
+                    
+                        args[0][k] = NULL;
+                        break;
                     }
-                    long handler=(long)freopen(args[0][k+1],"a", stdout);
-                    if (handler==-1) 
-                    {
-                        perror("msh");
-                        return 1;
-                    }
+                    k++;
                 }
-                k++;
             }
-            for (j = 0; j < num_builtins(); j++) {
-                if (strcmp(args[0][0], (const char *)builtin_str[j]) == 0) {
-                    if(out_put.empty()){
-                        return (*builtin_func[j])(args[0]);   
-                    }
-                    ofstream out(out_put.c_str());
-                    if (!out.is_open()) 
-                    {
-                        perror("msh");
-                        return 1;
-                    }
-                    coutbuf = cout.rdbuf();
-                    cout.rdbuf(out.rdbuf());
-                    FILE * st = freopen(out_put.c_str(),"w",stdout);
-                     (*builtin_func[j])(args[0]);
-                     fprintf(stdout,"salur\n");
-                     
-                     fclose(st);  
-                     stdout = fdopen(1,"stdout");    
-                     cout.rdbuf(coutbuf);
-                    return 1;                   
-                }
-            }        
-    
-           
- 
-            return launch();
+            
             
         
+            
+           
+            for (int j = 0; j < num_builtinprocs(); j++) {
+                if (strcmp(args[0][0], (const char *)builtinproc_str[j]) == 0) {
+
+                   return    (*builtinproc_func[j])(args[0]);
+                                          
+                }
+            }
+             return launch();
+            
+           
         }
     }
     }
@@ -377,7 +464,7 @@
             position = 0;
             
             size_t j(0), max = strlen(listePipe[i]);
-            string cmd,r(">"),b("\\"),c("\""),sc("'");
+            string cmd,b("\\"),c("\""),sc("'");
 
             bool neutralise_some = false;
             bool neutralise_all = false;
@@ -386,6 +473,7 @@
             bool in_console_redirection = false;
             bool out_write_redirection = false;
             bool out_append_redirection = false;
+            
             bool etat1 = false;//argument
             bool etat2 = true; //separator
             
@@ -406,13 +494,13 @@
                    if(listePipe[i][j] == '<'){
                         if(neutralise_all || neutralise_some){
                             //append
-                            cmd += r;
+                            cmd.push_back('<');
                         }
                         else
                         {
                             if(super_neutralise){
                                 //append
-                                cmd+=r;
+                                cmd.push_back('<');
                                 super_neutralise =  false;
                                 
                             }
@@ -431,10 +519,18 @@
                                     etat1 = false;
                                     etat2 = true;
                                     //append argument
-                                    cout << cmd.c_str()<<endl;             
-                                    args[i][position] = copier((char *)cmd.c_str());
-                                    position++;
-                                    cmd.clear();
+                                    
+                                    if(!cmd.empty()){             
+                                        args[i][position] = copier((char *)cmd.c_str());
+                                        position++;
+                                        cmd.clear();
+                                        cout << "msh : syntax error\n";
+                                        return 1;
+                                    }
+                                    if(listePipe[i][j-1] != '<'){
+                                        cout << "msh : syntax error\n";
+                                        return 1;
+                                    }
                                     if (position >= bufsize) {
                                     bufsize += TOK_BUFSIZE;
                                     args_backup = args;
@@ -453,8 +549,11 @@
                                    
                                     in_redirection = true;
                                     if(cmd.empty()){
-                                        args[i][position] = copier("<");                                        args[i][position] = copier(">"); 
+                                        args[i][position] = copier("<");           
+                                        args[i][position][0] = '<';
+                                        args[i][position][1] = '\0'; 
                                         position ++;
+                                        cout << args[i][position - 1] << copier("<")<< endl;
                                         goto pass;
                                     }
                                     etat1 = false;
@@ -474,6 +573,7 @@
                                         exit(EXIT_FAILURE);
                                     }
                                     }
+                                    
                                     args[i][position] = copier("<<"); 
                                     position ++;
                                     goto pass;
@@ -487,13 +587,13 @@
                     if(listePipe[i][j] == '>'){
                         if(neutralise_all || neutralise_some){
                             //append
-                            cmd += r;
+                            cmd.push_back('>');
                         }
                         else
                         {
                             if(super_neutralise){
                                 //append
-                                cmd+=r;
+                                cmd.push_back('>');
                                 super_neutralise =  false;
                                 
                             }
@@ -506,16 +606,28 @@
                                         return -1;
                                         //exit(EXIT_FAILURE);
                                     }
+                                    
                                     out_append_redirection = true;
                                     out_write_redirection = false;
                                     out_write_redirection = true;
                                     etat1 = false;
                                     etat2 = true;
                                     //append argument
-                                    cout << cmd.c_str()<<endl;             
-                                    args[i][position] = copier((char *)cmd.c_str());
-                                    position++;
-                                    cmd.clear();
+                                    
+                                    
+                                    if(!cmd.empty()){
+                                        args[i][position ] = copier((char *)cmd.c_str());
+                                        position++;
+                                        cmd.clear();
+                                        cout << "msh : syntaxe error" << endl;
+                                        return 1;
+                                    }             
+                                    
+                                    if(listePipe[i][j-1] != '>'){
+                                        cout << "msh : syntaxe error" << endl;
+                                        return 1;
+                                    }
+                                    
                                     if (position >= bufsize) {
                                     bufsize += TOK_BUFSIZE;
                                     args_backup = args;
@@ -527,7 +639,7 @@
                                                 }
                                     }
                                     args[i][position -1] = copier(">>");
-                                    position++;
+                                    position;
                                     goto pass;
                                 }
                                 else{
