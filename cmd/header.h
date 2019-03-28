@@ -34,6 +34,8 @@
     int help(char **args);
     int _exit(char **args);
     int history(char **args);
+    int ls(char **args);
+    int grep(char **args);
 
 
     long unsigned_convertion(char * chaine);
@@ -52,6 +54,8 @@
     */
      static   char *builtin_str[] = {
             "cd",
+            "ls",
+            "grep",
             "help",
             "exit",
             "history"

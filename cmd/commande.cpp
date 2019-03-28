@@ -22,6 +22,8 @@
 
         int (*builtin_func[]) (char **) = {
             &cd,
+            &ls,
+            &grep,
             &help,
             &_exit,
             &history
@@ -236,7 +238,9 @@
             if (strcmp(args[0][0], (const char *)builtin_str[j]) == 0) {
 
                 int status =    (*builtin_func[j])(args[0]);
-                    
+                if(status == -1){
+                    perror("msh");
+                }
                 _exit(status);                   
             }
         }                
@@ -439,7 +443,7 @@
 
     
 
-
+  
 
     /**
      @brief Split a line into argss (very naively).

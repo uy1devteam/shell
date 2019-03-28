@@ -72,7 +72,71 @@
     }
     return 1;
     }
-
+    /**
+     @brief Bultin command: ls add color and regex list.
+    @param args List of args.  args[0] is "ls".  
+    @return Always returns -1 on error.
+    */
+    int ls(char **args){
+        
+        vector <char *> arg_list_tmp;
+        vector <char *>::iterator il;
+        int position = 0;
+        
+        while (args[position]!=NULL)
+        {
+            char *tmp=strstr(args[position],"*");
+            if (tmp!=NULL)
+            {
+                glob_t g;
+                int retour_glob=glob(tmp,0,NULL,&g);
+                if (retour_glob==0)
+                {
+                    int boucle;
+                    for (boucle=0;boucle<g.gl_pathc;++boucle)
+                    {
+                        arg_list_tmp.push_back(strdup(g.gl_pathv[boucle]));
+                    }
+                    free(args[position]);
+                }
+            else
+            {
+                arg_list_tmp.push_back(args[position]);
+            }
+            globfree(&g);
+        }
+        else
+        {
+            arg_list_tmp.push_back(args[position]);
+            
+        }
+            ++position;
+        }
+        position = 0;
+        for(il = arg_list_tmp.begin(); il < arg_list_tmp.end();il++){
+            args[position ++] = *il;
+        }
+        
+        args[position++]= (char *) "--color";
+        args[position] = NULL;
+        return execvp(args[0],args);
+    }
+    /**
+     @brief Bultin command: grep add color and regex search.
+    @param args List of args.  args[0] is "grep".  
+    @return Always returns -1 on error.
+    */
+    int grep(char **args){
+        int position = 0;
+        while(args[position] != NULL){
+            position++;
+        }
+        args[position ++] = (char *) "--color";
+        args[position ++] = (char *) "-E";
+        //args[position ++] = (char *) "-L";
+        args[position ] = NULL;
+        return execvp(args[0],args);
+    }
     /**
      @brief Builtin command: print help.
     @param args List of args.  Not examined.

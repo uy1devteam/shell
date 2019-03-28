@@ -44,6 +44,7 @@
             commande& operator= ( const commande &);
             int launch();
             int execute();
+            int traitement_etoille();
     };
     
 
