@@ -1,22 +1,17 @@
 
-#include <iostream>
-#include <string>
-#include "header.h"
-#include <fstream>
-#include "commande.h"
-#include "commandes.h"
-#include "vector"
-    using namespace std;
+
+#include "commandes.hpp"
+
+   
 
     
     
-    commandes::~commandes(){
+    
+    commandes::commandes(const char * enter){
+        char * line = strdup(enter), *debut =line;
+        size_t i(0),k=0,max=strlen(line);
+        std::string  cmd;
         
-    }
-    commandes::commandes(char * line){
-        size_t i(0),j(0),k=0,max=strlen(line);
-     
-        char * v;
         bool neutralise_some = false;
         bool neutralise_all = false;
         bool super_neutralise = false;  
@@ -33,16 +28,28 @@
                         {   
 
 save_commande:             
+                            size_t j = cmd.length() - 1;
+                            while(!cmd.empty() && j >= 0){
+                                if(cmd[j] == ' ')
+                                {
+                                    cmd.erase(j);
+                                }
+                                
+                                else
+                                {
+                                    break;
+                                }
+                                j--;
+                            }
                             
-                            line[i] = '\0';
-                            
-                            commande t(copier(line));
+                            if(cmd.empty())goto pass;
+                            commande t(cmd.c_str());
                             liste.push_back(t);
-                            line = line + i +1;
+                            cmd.clear();
                             k++;                          
                             
                             
-                            j=0;
+                           
                             goto pass;
                         }
                     }
@@ -51,7 +58,8 @@ save_commande:
 
            
           
-            j++;
+           
+            cmd.push_back(line[i]);
             if(line[i] == '\"'){
 
                 if(neutralise_all){
@@ -128,11 +136,13 @@ append_simple_cote:
                 super_neutralise = true;
                 goto pass;
             }
-pass:       i++;     
+            
+pass:       i++; 
         }
      
-    if(j != 0)goto save_commande;
-      
+    if(!cmd.empty())goto save_commande;
+    
+    free(debut);  
 }
     commandes::commandes(unsigned int argc,commande* argv){
 
@@ -154,6 +164,7 @@ pass:       i++;
     }
     int commandes::append( commande  arg){
         liste.push_back(arg);
+        return 0;
     };
     int commandes::erase(unsigned int  position){
         

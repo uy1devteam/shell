@@ -1,12 +1,12 @@
 
-#include <iostream>
-#include "header.h"
-#include "commande.h"
-#include "commandes.h"
+#include "header.hpp"
+#include "commandes.hpp"
 
     using namespace std;
     
+    extern    char *builtin_str; 
 
+    extern    char *builtinproc_str; ;
 
         /*
     Builtin function implementations.
@@ -351,10 +351,10 @@
         
        
         commandes cmds(line);
-      
+         cmds.affiche();
         status = cmds.execute_all();    
-            
-        
+        cmds.affiche();    
+
         free(line);
     
     } while (status);
@@ -374,7 +374,7 @@
             case ')':
             case '>':
             case '<':
-        
+            case ';':      
                 return true;        
             break;
             default:
