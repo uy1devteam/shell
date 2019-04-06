@@ -16,4 +16,4 @@ Makefile
 number.cpp
 number.hpp
 out.txt
-[0m[01;32mshell[0m
+shell

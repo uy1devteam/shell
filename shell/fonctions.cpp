@@ -117,7 +117,7 @@
             args[position ++] = *il;
         }
         
-        args[position++]= (char *) "--color";
+        args[position++]= strdup( "--color");
         args[position] = NULL;
         return execvp(args[0],args);
     }
@@ -131,8 +131,8 @@
         while(args[position] != NULL){
             position++;
         }
-        args[position ++] = (char *) "--color";
-        args[position ++] = (char *) "-E";
+        args[position ++] = strdup( "--color");
+        args[position ++] =  strdup("-E");
         //args[position ++] = (char *) "-L";
         args[position ] = NULL;
         return execvp(args[0],args);
@@ -146,14 +146,14 @@
     {
         int i;
     
-        printf("Type program names and arguments, and hit enter.\n");
-        printf("The following are built in:\n");
+        cout << "Type program names and arguments, and hit enter.\n";
+        cout << "The following are built in:\n";
 
         for (i = 0; i < num_builtins(); i++) {
-            printf("  %s\n", builtin_str[i]);
+            cout << builtin_str[i] << endl;
         }
 
-        printf("Use the man command for information on other programs.\n");
+        cout << "Use the man command for information on other programs.\n";
         return 1;
     }
 
@@ -351,9 +351,9 @@
         
        
         commandes cmds(line);
-         cmds.affiche();
+         
         status = cmds.execute_all();    
-        cmds.affiche();    
+            
 
         free(line);
     

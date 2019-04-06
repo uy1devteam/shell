@@ -454,7 +454,7 @@
             if( has_error()) return 1;
             
             if(!has_liste_Pipe()) return 1;
-            cout << args[0][0] <<endl;    
+                
             if( execute_pipe()) return 1;
             
             scan_redirection();
@@ -938,14 +938,14 @@ ours_commandes:
 commande::commande(const char * l){
         size_t i(0),j(0), max = strlen(l);
         listePipe = (char **)malloc(512 * sizeof(char**));
-        char * line = strdup(l),* f = line;
+        char * line = strdup(l);
         hasPipe = false;
         hasError = false;
         bool neutralise_some = false;
         bool neutralise_all = false;
         bool super_neutralise = false;  
         length = 0;
-                  
+        string  cmd;          
         while(i < max){
             
             if(line[i] == '|'){
@@ -958,12 +958,25 @@ commande::commande(const char * l){
                         {   
 
 save_commande:              
-                            line[i] ='\0';
-                            listePipe[length] = strdup(line);
-                            line = line + i + 1;
-                            length++;                          
+                            int j = cmd.length() - 1;
+                            while(!cmd.empty() && j >= 0){
+                                if(cmd[j] == ' ')
+                                {
+                                    cmd.erase(j);
+                                }
+                                
+                                else
+                                {
+                                    break;
+                                }
+                                j--;
+                            }
                             
-                            j=0;
+                            listePipe[length] = strdup(cmd.c_str());
+                            
+                            length++;                          
+                            cmd.clear();
+                            
                             goto pass;
                         }
                     }
@@ -1025,7 +1038,7 @@ append_simple_cote:
                 }
                 
             }
-
+            cmd.push_back(line[i]);
             if(line[i]=='\\'){
                 if(neutralise_all){
                     
@@ -1052,9 +1065,9 @@ append_simple_cote:
 pass:       i++;     
         }
      
-    if(j != 0)goto save_commande;
+    if(!cmd.empty())goto save_commande;
     listePipe[length] = NULL;
     if(length > 1)hasPipe=true;
-    free(f);
+    free(line);
     this->calcule_args();
 }

@@ -28,7 +28,7 @@
                         {   
 
 save_commande:             
-                            size_t j = cmd.length() - 1;
+                            int j = cmd.length() - 1;
                             while(!cmd.empty() && j >= 0){
                                 if(cmd[j] == ' ')
                                 {
