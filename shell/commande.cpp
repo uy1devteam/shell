@@ -491,7 +491,7 @@
         args = (char ***)calloc(bufsize , sizeof(char**));
         char  ***args_backup;
         size_t i = 0;
-        
+
         if (!args) {
             cerr << "msh: allocation error" << endl;
             exit(EXIT_FAILURE);
@@ -500,7 +500,7 @@
         while(i < length){
             args[i] = (char **)calloc(bufsize , sizeof(char*));
             position = 0;
-            
+            cout << listePipe[i] << endl;
             size_t j(0), max = strlen(listePipe[i]);
             std::string cmd,b("\\"),c("\""),sc("'");
 
