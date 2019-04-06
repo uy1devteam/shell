@@ -500,7 +500,7 @@
         while(i < length){
             args[i] = (char **)calloc(bufsize , sizeof(char*));
             position = 0;
-            cout << listePipe[i] << endl;
+            
             size_t j(0), max = strlen(listePipe[i]);
             std::string cmd,b("\\"),c("\""),sc("'");
 
@@ -516,18 +516,19 @@
             bool etat2 = true; //separator
             
             while (j < max) {
+                
                 if( is_separator(listePipe[i][j])){
                     //analyse separator
 
                    if(listePipe[i][j] == ' '){
+                       super_neutralise = false;
                        if(neutralise_all || neutralise_some){
-                            //append
-                            cmd.push_back(' ');
+                            
+                            goto notaseparatot;
                         }
-                        else
-                        {
-                         super_neutralise = false;   
-                        }
+                       
+                        
+                        
                    }
                    if(listePipe[i][j] == '<'){
                         if(neutralise_all || neutralise_some){
@@ -715,24 +716,29 @@
                         
                     }
                     if(listePipe[i][j] == '\"'){
+                        cout << cmd.c_str() << "gf"<<endl;
                         if(neutralise_all){
-        append_cote:        cmd+= c;
+        append_cote:        cmd.push_back( '\"');
                             
                             super_neutralise = false;
                             goto pass;
                         }
 
                         if(neutralise_some){
-                        if(super_neutralise){
-                            goto append_cote;
-                        } 
-                        neutralise_some = false;
-                        goto pass;  
+                            if(super_neutralise){
+                                
+                                goto append_cote;
+                            } 
+                            neutralise_some = false;
+                        
+                            goto pass;  
                         }else
                         {
+                            cout << cmd.c_str() <<endl;
                             if(super_neutralise){
                             goto append_cote;
                             }
+                            
                             neutralise_all = false;
                             super_neutralise = false;
                             neutralise_some = true;
@@ -819,7 +825,7 @@
                 }
                 else
                 {
-                    if(etat2){
+notaseparatot:      if(etat2){
                         etat2 = false;
                         etat1 = true;
                     }
@@ -936,7 +942,7 @@ ours_commandes:
 		wait(NULL); 
 }
 commande::commande(const char * l){
-        size_t i(0),j(0), max = strlen(l);
+        size_t i(0), max = strlen(l);
         listePipe = (char **)malloc(512 * sizeof(char**));
         char * line = strdup(l);
         hasPipe = false;
@@ -983,9 +989,9 @@ save_commande:
                 }
             }
 
-           
+           cmd.push_back(line[i]);
                
-            j++;
+           
             if(line[i] == '\"'){
 
                 if(neutralise_all){
@@ -1038,7 +1044,7 @@ append_simple_cote:
                 }
                 
             }
-            cmd.push_back(line[i]);
+            
             if(line[i]=='\\'){
                 if(neutralise_all){
                     
