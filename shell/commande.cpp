@@ -11,11 +11,12 @@
             "help",
             "exit",
             "history",
-            "rm"
+            "rm",
+            "back",
             };
 
-    char *builtinproc_str[] = {"cd"};
- 
+    char *builtinproc_str[] = {"cd","back"};
+    extern string base;
     #define READ  0
     #define WRITE 1
 
@@ -33,9 +34,11 @@
             &_exit,
             &history,
             &rm,
+            &back,
         };
         int (*builtinproc_func[]) (char **) = {
             &cd,
+            &back,
         };
     commande::commande(){
         length = 0;
@@ -247,20 +250,20 @@
 
                 int status =    (*builtin_func[j])(args[0]);
                 if(status == -1){
-                    perror("msh");
+                    perror(erro_mes(args[0][0]).c_str());
                 }
                 _exit(status);                   
             }
         }                
         if (execvp(args[0][0], args[0]) == -1) {
-        perror("msh");
+        perror(erro_mes(args[0][0]).c_str());
         _exit(EXIT_FAILURE);
         }
         
         _exit(EXIT_SUCCESS);
     } else if (pid < 0) {
         // Error forking
-        perror("msh");
+        perror(erro_mes(args[0][0]).c_str());
     } else {
         // Parent process
         do {
@@ -285,6 +288,9 @@
             return true;
         }
         return false;
+    }
+    string erro_mes(char * arg){
+        return cat_many(2,"msh : ",arg);
     }
     bool commande::execute_pipe(){
         
@@ -320,7 +326,7 @@
                     if(!args[0][k+1])
                     {
                         hasError = true;
-                        erro_message.append( "msh : error on ");
+                        erro_message.append( "msh: error on ");
                         erro_message.append( args[0][k] );                    
                         erro_message.push_back('\n');
                         return false;
@@ -374,7 +380,7 @@
                         }
                         else{
                             hasError = true;
-                            erro_message.append( "msh : error on ");
+                            erro_message.append( "msh: error on ");
                             erro_message.append( args[0][k] );                    
                             erro_message.push_back('\n');
                             return false;
@@ -414,7 +420,7 @@
                         if(!args[0][k+1]){
                                     //repport the error
                             hasError = true;
-                            erro_message.append( "msh : error on ");
+                            erro_message.append( "msh: error on ");
                             erro_message.append( args[0][k] );                    
                             erro_message.push_back('\n');
                             return false;
@@ -462,7 +468,7 @@
             scan_redirection();
             
             if( has_error()) return 1;
-            for (int j = 0; j < num_in(builtinproc_str); j++) 
+            for (int j = 0; j <= num_in(builtinproc_str); j++) 
             {
                 if (strcmp(args[0][0], (const char *)builtinproc_str[j]) == 0) 
                 {
@@ -748,7 +754,7 @@
                         }
                         
                     }
-
+            
                     if(listePipe [i][j] == '\''){
                         if(neutralise_some){
         append_simple_cote: cmd+=sc;
@@ -835,7 +841,19 @@ notaseparatot:      if(etat2){
                     {
                         
                     }
+                    if(listePipe[i][j] == '~' ){
+                        if( super_neutralise || neutralise_some || neutralise_all){
+                            cmd.push_back(listePipe[i][j]); 
+                        }else{
+                            cmd+=base;
+                        }
+                        goto pass;
+                    }
                     cmd.push_back(listePipe[i][j]);
+                    super_neutralise = false;
+                        
+                    
+                    
                 }
 
                
@@ -912,7 +930,7 @@ notaseparatot:      if(etat2){
 		}
         
         
-        for (int j = 0; j < num_in(builtin_str); j++) {
+        for (int j = 0; j <= num_in(builtin_str); j++) {
             if (strcmp(args[cmd][0], (const char *)builtin_str[j]) == 0) {
                 (*builtin_func[j])(args[cmd]);
                 exit(EXIT_SUCCESS);
@@ -920,7 +938,7 @@ notaseparatot:      if(etat2){
             }
         } 
 		if (execvp( args[cmd][0], args[cmd]) == -1){
-            perror("msh");
+            perror(erro_mes(args[cmd][0]).c_str());
 			exit(EXIT_FAILURE); // If child fails
         }
 	}

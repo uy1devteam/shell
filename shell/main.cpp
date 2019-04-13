@@ -28,7 +28,7 @@
     {
         // Load config files, if any.
     
-        
+        init();
         // Run command loop.
         loop();
 

@@ -7,7 +7,8 @@
     extern    char **builtin_str; 
 
     extern    char **builtinproc_str; 
-
+    string base, username;
+    histo::histo prevRepository;
     /*
     Builtin function implementations.
     */
@@ -57,18 +58,56 @@
         return 1;    
     }
 
+        /**
+     @brief Bultin command: back to the previous repository max capacity 20.
+    @param args List of args.  args[0] is "back".  args[1] NULL.
+    @return Always returns 1, to continue executing.
+    */
+    int back(char **args){
+        cout << "sdsd\n";
+        if (args[1] != NULL){
+            cerr << "msh : trop d'argument pour la commande back \n";
+        }else{
+            string rep = prevRepository.pop();  
+            
+            if(! rep.empty()){
+                cout << rep.c_str() << "sdsd\n";
+                if (chdir(rep.c_str()) != 0) {
+                    perror("msh");
+                }
+            }else{
+                if (chdir(base.c_str()) != 0) {
+                    perror("msh");
+                }
+            }
+               
+        }    
+    }
     /**
      @brief Bultin command: change directory.
-    @param args List of args.  args[0] is "cd".  args[1] is the directory.
+    @param args List of args.  args[0] is "cd".  args[1] is the directory if NULL the defaul repository is used.
     @return Always returns 1, to continue executing.
     */
     int cd(char **args)
     {
     if (args[1] == NULL) {
-        cerr << "msh: expected argument to \"cd\"\n";
+        //go to default repository
+        if (chdir(base.c_str()) != 0) {
+
+            perror("msh");
+        }else{
+            prevRepository.push(base);
+        }
     } else {
+        if(args[2] != NULL){
+            cerr << "msh : trop d'arguments pour la commande cd\n";
+            return 1;
+        }
         if (chdir(args[1]) != 0) {
         perror("msh");
+        }else{
+            
+            prevRepository.push(args[1]);
         }
         
     }
@@ -263,16 +302,8 @@
 
     string directory(){
         string  path =  get_current_dir_name();
-        string username = getenv("USER");
-        string base = cat_many(2,"/home/",username.c_str());        
-        
-        if(path.compare(base) == 0  ){
-            path.replace(0,base.length(),"~/");
-        }else{
-            if(path.compare(base) > 0){
+            if (path.find(base.c_str()) == 0)        
                 path.replace(0,base.length() + 1,"~/");
-            }
-        }
         return cat_many(8,"\e[032;1m",username.c_str(),"\e[33;0m",":","\033[34;1m",path.c_str(),"\033[47;0m","$ ");
         
     }
@@ -380,6 +411,14 @@
         return copie;
     }
     /**
+     * 
+     *@brief do all initialisation
+     * */
+    void init(void){
+         username = getenv("USER");
+         base = cat_many(2,"/home/",username.c_str());
+    }
+    /**
      @brief Loop getting input and executing it.
     */
     void loop(void)
@@ -426,7 +465,8 @@
             case '>':
             case '<':
             case ';':
-            case '\"':      
+            case '\"':
+           
                 return true;        
             break;
             default:

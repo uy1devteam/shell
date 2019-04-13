@@ -15,7 +15,7 @@
 #include <string.h>
 #include <glob.h>
 #include <errno.h>
-
+#include "histo.hpp"
 
 #define EQUAL 0
 #define TIRET '-'
@@ -39,6 +39,7 @@
     int ls(char **);
     int grep(char **);
     int rm(char **);
+    int back(char **args);
 
     long unsigned_convertion(char *); 
     long convertion(char *);
@@ -49,7 +50,8 @@
     char * copier(char * );   
     bool is_separator(char );
     int num_in(char ** );
-      
+    void init(void);  
+    std::string erro_mes(char * cmd);
           /*
     List of builtin commands, followed by their corresponding functions.
 
