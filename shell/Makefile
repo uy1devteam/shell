@@ -1,5 +1,5 @@
-OBJECTS= main.o env.o commande.o commandes.o fonctions.o 
-LIB= -lreadline
+OBJECTS= main.o env.o commande.o commandes.o fonctions.o number.o names.o
+LIB= -lreadline -lgmp -lgmpxx
 CFLAGS= -Wall -Wextra -g -c
 CPP= g++
 do : shell

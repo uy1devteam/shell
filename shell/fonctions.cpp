@@ -4,13 +4,14 @@
 
     using namespace std;
     
-    extern    char *builtin_str; 
+    extern    char **builtin_str; 
 
-    extern    char *builtinproc_str; ;
+    extern    char **builtinproc_str; 
 
-        /*
+    /*
     Builtin function implementations.
     */
+
     /**
      @brief Bultin command: echo history of comande line.
     @param args List of args.  args[0] is "cd".  
@@ -55,6 +56,7 @@
         }
         return 1;    
     }
+
     /**
      @brief Bultin command: change directory.
     @param args List of args.  args[0] is "cd".  args[1] is the directory.
@@ -63,7 +65,7 @@
     int cd(char **args)
     {
     if (args[1] == NULL) {
-        fprintf(stderr, "msh: expected argument to \"cd\"\n");
+        cerr << "msh: expected argument to \"cd\"\n";
     } else {
         if (chdir(args[1]) != 0) {
         perror("msh");
@@ -71,6 +73,52 @@
         
     }
     return 1;
+    }
+    /**
+     * @brief Bultin command: rm remove elements in directory by name or by regex list
+     * @param args List of args.  args[0] is "rm".  
+     * @return Always returns -1 on error.
+     * */
+    int rm(char **args){
+        vector <char *> arg_list_tmp;
+        vector <char *>::iterator il;
+        int position = 0;
+        
+        while (args[position]!=NULL)
+        {
+            char *tmp=strstr(args[position],"*");
+            if (tmp!=NULL)
+            {
+                glob_t g;
+                int retour_glob=glob(tmp,0,NULL,&g);
+                if (retour_glob==0)
+                {
+                    int boucle;
+                    for (boucle=0;boucle<g.gl_pathc;++boucle)
+                    {
+                        arg_list_tmp.push_back(strdup(g.gl_pathv[boucle]));
+                    }
+                    free(args[position]);
+                }
+            else
+            {
+                arg_list_tmp.push_back(args[position]);
+            }
+            globfree(&g);
+        }
+        else
+        {
+            arg_list_tmp.push_back(args[position]);
+            
+        }
+            ++position;
+        }
+        position = 0;
+        for(il = arg_list_tmp.begin(); il < arg_list_tmp.end();il++){
+            args[position ++] = *il;
+        }
+        args[position] = NULL;
+        return execvp(args[0],args);
     }
     /**
      @brief Bultin command: ls add color and regex list.
@@ -149,7 +197,7 @@
         cout << "Type program names and arguments, and hit enter.\n";
         cout << "The following are built in:\n";
 
-        for (i = 0; i < num_builtins(); i++) {
+        for (i = 0; i < num_in(builtin_str); i++) {
             cout << builtin_str[i] << endl;
         }
 
@@ -228,13 +276,16 @@
         return cat_many(8,"\e[032;1m",username.c_str(),"\e[33;0m",":","\033[34;1m",path.c_str(),"\033[47;0m","$ ");
         
     }
-          
-    int num_builtins() {
-    return sizeof(builtin_str) / sizeof(char *);
-    }
-    int num_builtinprocs() {
-        return sizeof(builtinproc_str) / sizeof(char *);
-    }
+    
+    /*
+    @brief  num_in count number of item in char * array 
+    @params object char ** pointeur on array that search number of item 
+    @return int number of item
+    */
+    int num_in(char ** object) {
+        return sizeof(object) / sizeof(char *);
+    }      
+    
     
     /*
     @brief cat_many cat str argument in to one string 

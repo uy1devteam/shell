@@ -10,7 +10,8 @@
             "grep",
             "help",
             "exit",
-            "history"
+            "history",
+            "rm"
             };
 
     char *builtinproc_str[] = {"cd"};
@@ -30,7 +31,8 @@
             &grep,
             &help,
             &_exit,
-            &history
+            &history,
+            &rm,
         };
         int (*builtinproc_func[]) (char **) = {
             &cd,
@@ -240,7 +242,7 @@
             }
             
         }
-        for (int j = 0; j < num_builtins(); j++) {
+        for (int j = 0; j < num_in(builtin_str); j++) {
             if (strcmp(args[0][0], (const char *)builtin_str[j]) == 0) {
 
                 int status =    (*builtin_func[j])(args[0]);
@@ -460,7 +462,7 @@
             scan_redirection();
             
             if( has_error()) return 1;
-            for (int j = 0; j < num_builtinprocs(); j++) 
+            for (int j = 0; j < num_in(builtinproc_str); j++) 
             {
                 if (strcmp(args[0][0], (const char *)builtinproc_str[j]) == 0) 
                 {
@@ -716,7 +718,7 @@
                         
                     }
                     if(listePipe[i][j] == '\"'){
-                        cout << cmd.c_str() << "gf"<<endl;
+                        
                         if(neutralise_all){
         append_cote:        cmd.push_back( '\"');
                             
@@ -734,7 +736,7 @@
                             goto pass;  
                         }else
                         {
-                            cout << cmd.c_str() <<endl;
+                            
                             if(super_neutralise){
                             goto append_cote;
                             }
@@ -910,7 +912,7 @@ notaseparatot:      if(etat2){
 		}
         
         
-        for (int j = 0; j < num_builtins(); j++) {
+        for (int j = 0; j < num_in(builtin_str); j++) {
             if (strcmp(args[cmd][0], (const char *)builtin_str[j]) == 0) {
                 (*builtin_func[j])(args[cmd]);
                 exit(EXIT_SUCCESS);

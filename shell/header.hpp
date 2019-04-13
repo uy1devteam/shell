@@ -32,24 +32,23 @@
         /*
     Function Declarations for builtin shell commands:
     */
-    int cd(char **args);
-    int help(char **args);
-    int _exit(char **args);
-    int history(char **args);
-    int ls(char **args);
-    int grep(char **args);
+    int cd(char **);
+    int help(char **);
+    int _exit(char **);
+    int history(char **);
+    int ls(char **);
+    int grep(char **);
+    int rm(char **);
 
-
-    long unsigned_convertion(char * chaine);
-    int num_builtins(void); 
-    long convertion(char * chaine);
+    long unsigned_convertion(char *); 
+    long convertion(char *);
     std::string directory(void);
     void loop(void);
-    std::string cat_many(int nbCh, ...);
-    char **split_line(char *line);
-    char * copier(char * word);   
-    bool is_separator(char c);
-    int num_builtinprocs();
+    std::string cat_many(int , ...);
+    char **split_line(char *);
+    char * copier(char * );   
+    bool is_separator(char );
+    int num_in(char ** );
       
           /*
     List of builtin commands, followed by their corresponding functions.
