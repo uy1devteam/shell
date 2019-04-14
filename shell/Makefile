@@ -1,6 +1,6 @@
 OBJECTS= main.o env.o commande.o commandes.o fonctions.o number.o names.o histo.o
 LIB= -lreadline -lgmp -lgmpxx
-CFLAGS= -Wall -Wextra -g -c
+CFLAGS= -Wall -Wextra -g -c 
 CPP= g++
 do : shell
 %.o: %.cpp %.hpp header.hpp

@@ -8,7 +8,7 @@
 
     extern    char **builtinproc_str; 
     string base, username;
-    histo::histo prevRepository;
+    listes::histo  prevRepository;
     /*
     Builtin function implementations.
     */
@@ -64,24 +64,21 @@
     @return Always returns 1, to continue executing.
     */
     int back(char **args){
-        cout << "sdsd\n";
+        
         if (args[1] != NULL){
             cerr << "msh : trop d'argument pour la commande back \n";
         }else{
             string rep = prevRepository.pop();  
             
             if(! rep.empty()){
-                cout << rep.c_str() << "sdsd\n";
+                
                 if (chdir(rep.c_str()) != 0) {
-                    perror("msh");
-                }
-            }else{
-                if (chdir(base.c_str()) != 0) {
                     perror("msh");
                 }
             }
                
-        }    
+        }
+            
     }
     /**
      @brief Bultin command: change directory.
@@ -103,14 +100,16 @@
             cerr << "msh : trop d'arguments pour la commande cd\n";
             return 1;
         }
+        string tampon(get_current_dir_name());
         if (chdir(args[1]) != 0) {
         perror("msh");
         }else{
             
-            prevRepository.push(args[1]);
+            prevRepository.push(tampon);
         }
         
     }
+    
     return 1;
     }
     /**
