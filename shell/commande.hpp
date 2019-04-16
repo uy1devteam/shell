@@ -49,5 +49,22 @@
             int traitement_etoille();
     };
     
+    class usCommandes
+    {
+    private:
+        std::vector <std::string> list;
+    public:
+        usCommandes();
+        usCommandes(char **, int );
+        usCommandes(int,...);
+        ~usCommandes();
+        void print(void);
+        size_t length();
+        std::string get(int );
+        int is(const char *);
+    };
+    
+    
+    
 
 #endif

@@ -26,6 +26,8 @@
             bool is_null(void);
             void read_only(void);
             bool is_const(void);
+            std::string get_name(void);
+            std::string c_str();
             friend bool operator==(base n1, base n2); 
             friend base operator+(base n1, base n2);
             friend base operator*(base n1, base n2);
@@ -46,7 +48,8 @@
             int  new_number(std::string, std::string);
             int new_number(const char *, const char *);
             base get(const char *);
-            int set(const char *, mpf_class);
+            base set(const char *, mpf_class);
+            base set(const char *, const char *);
             int del(const char *);
         };
         

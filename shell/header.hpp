@@ -52,6 +52,7 @@
     int num_in(char ** );
     void init(void);  
     std::string erro_mes(char * cmd);
+    void regex(char ** args , int &position);
           /*
     List of builtin commands, followed by their corresponding functions.
 

@@ -1,14 +1,15 @@
 
 #include "header.hpp"
 #include "commandes.hpp"
-
+#include "env.hpp"
     using namespace std;
     
-    extern    char **builtin_str; 
+    extern    usCommandes builtinAll; 
 
     extern    char **builtinproc_str; 
     string base, username;
     listes::histo  prevRepository;
+    environnement::env env;
     /*
     Builtin function implementations.
     */
@@ -19,7 +20,7 @@
     */
     int history(char **args)
     {
-
+        
         
         if (args[1] == NULL) {
             
@@ -37,12 +38,12 @@
             if(args[2] ==   NULL){
 
             }else{
-                cerr << "msh: to many arguments to \"history\"" << endl;
+                cerr << "msh: trop d'arguments pour la commande \"history\"" << endl;
                 return 1;
             }
             long p = unsigned_convertion(args[1]);
             if(p < 0){
-                cerr << "msh: need numerique argument to \"history\"" << endl;
+                cerr << "msh: un entier est requi pour \"history\"" << endl;
             }else{
                 HIST_ENTRY** first  = history_list();
                 int i = (p < history_length)?  history_length - p: 0 ;
@@ -66,14 +67,31 @@
     int back(char **args){
         
         if (args[1] != NULL){
-            cerr << "msh : trop d'argument pour la commande back \n";
+            if(args[2] != NULL){
+                cerr << "msh: trop d'argument pour la commande back \n";
+            }else{
+                long p = unsigned_convertion(args[1]);
+                if(p < 0){
+                    cerr << "msh: un entier est requi pour \"history\"" << endl;
+                }else
+                {
+                  string rep = prevRepository.pop(p);
+                    if(! rep.empty()){
+            
+                        if (chdir(rep.c_str()) != 0) {
+                            perror(erro_mes("back").c_str());
+                        }
+                    }  
+                }
+                
+            }
         }else{
             string rep = prevRepository.pop();  
             
             if(! rep.empty()){
                 
                 if (chdir(rep.c_str()) != 0) {
-                    perror("msh");
+                    perror(erro_mes("back").c_str());
                 }
             }
                
@@ -97,7 +115,7 @@
         }
     } else {
         if(args[2] != NULL){
-            cerr << "msh : trop d'arguments pour la commande cd\n";
+            cerr << "msh: trop d'arguments pour la commande cd\n";
             return 1;
         }
         string tampon(get_current_dir_name());
@@ -118,43 +136,10 @@
      * @return Always returns -1 on error.
      * */
     int rm(char **args){
-        vector <char *> arg_list_tmp;
-        vector <char *>::iterator il;
+ 
         int position = 0;
         
-        while (args[position]!=NULL)
-        {
-            char *tmp=strstr(args[position],"*");
-            if (tmp!=NULL)
-            {
-                glob_t g;
-                int retour_glob=glob(tmp,0,NULL,&g);
-                if (retour_glob==0)
-                {
-                    int boucle;
-                    for (boucle=0;boucle<g.gl_pathc;++boucle)
-                    {
-                        arg_list_tmp.push_back(strdup(g.gl_pathv[boucle]));
-                    }
-                    free(args[position]);
-                }
-            else
-            {
-                arg_list_tmp.push_back(args[position]);
-            }
-            globfree(&g);
-        }
-        else
-        {
-            arg_list_tmp.push_back(args[position]);
-            
-        }
-            ++position;
-        }
-        position = 0;
-        for(il = arg_list_tmp.begin(); il < arg_list_tmp.end();il++){
-            args[position ++] = *il;
-        }
+        regex(args,position);
         args[position] = NULL;
         return execvp(args[0],args);
     }
@@ -165,43 +150,10 @@
     */
     int ls(char **args){
         
-        vector <char *> arg_list_tmp;
-        vector <char *>::iterator il;
+       
         int position = 0;
+        regex(args,position);
         
-        while (args[position]!=NULL)
-        {
-            char *tmp=strstr(args[position],"*");
-            if (tmp!=NULL)
-            {
-                glob_t g;
-                int retour_glob=glob(tmp,0,NULL,&g);
-                if (retour_glob==0)
-                {
-                    int boucle;
-                    for (boucle=0;boucle<g.gl_pathc;++boucle)
-                    {
-                        arg_list_tmp.push_back(strdup(g.gl_pathv[boucle]));
-                    }
-                    free(args[position]);
-                }
-            else
-            {
-                arg_list_tmp.push_back(args[position]);
-            }
-            globfree(&g);
-        }
-        else
-        {
-            arg_list_tmp.push_back(args[position]);
-            
-        }
-            ++position;
-        }
-        position = 0;
-        for(il = arg_list_tmp.begin(); il < arg_list_tmp.end();il++){
-            args[position ++] = *il;
-        }
         
         args[position++]= strdup( "--color");
         args[position] = NULL;
@@ -223,11 +175,54 @@
         args[position ] = NULL;
         return execvp(args[0],args);
     }
+    /*
+     *@brief replace a regex args by the files liste who match a schema 
+     */
+    void regex(char ** args , int &position){
+        vector <char *> arg_list_tmp;
+        vector <char *>::iterator il;
+        position = 0;
+    
+        while (args[position]!=NULL)
+        {
+            char *tmp=strstr(args[position],"*");
+            if (tmp!=NULL)
+            {
+                glob_t g;
+                int retour_glob=glob(tmp,0,NULL,&g);
+                if (retour_glob==0)
+                {
+                    int boucle;
+                    for (boucle=0;boucle<g.gl_pathc;++boucle)
+                    {
+                        arg_list_tmp.push_back(strdup(g.gl_pathv[boucle]));
+                    }
+                    free(args[position]);
+                }
+            else
+            {
+                arg_list_tmp.push_back(args[position]);
+            }
+            globfree(&g);
+        }
+        else
+        {
+            arg_list_tmp.push_back(args[position]);
+            
+        }
+            ++position;
+        }
+        position = 0;
+        for(il = arg_list_tmp.begin(); il < arg_list_tmp.end();il++){
+            
+            args[position ++] = *il;
+        }
+    }
     /**
-     @brief Builtin command: print help.
-    @param args List of args.  Not examined.
-    @return Always returns 1, to continue executing.
-    */
+     *@brief Builtin command: print help.
+     *@param args List of args.  Not examined.
+     *@return Always returns 1, to continue executing.
+     */
     int help(char **args)
     {
         int i;
@@ -235,9 +230,7 @@
         cout << "Type program names and arguments, and hit enter.\n";
         cout << "The following are built in:\n";
 
-        for (i = 0; i < num_in(builtin_str); i++) {
-            cout << builtin_str[i] << endl;
-        }
+        builtinAll.print();
 
         cout << "Use the man command for information on other programs.\n";
         return 1;
@@ -425,11 +418,13 @@
     char *line;
   
     int status;
-
     using_history();
-    if( read_history(HISTORY_NAME)){
-        write_history(HISTORY_NAME);
-    };
+
+    string HISTORY_PATH =  cat_many(3,base.c_str(),"/",HISTORY_NAME);
+    
+    if( read_history(HISTORY_PATH.c_str())!= 0){
+        write_history(HISTORY_PATH.c_str());
+    }
     stifle_history(HISTORY_MAX_LENGTH);
  
     do {

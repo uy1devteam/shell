@@ -46,6 +46,7 @@ namespace listes{
         bool empty();
         void push(std::string);
         std::string pop(void);
+        std::string pop(long);
     };
     
         

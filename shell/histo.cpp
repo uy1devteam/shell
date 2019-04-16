@@ -69,6 +69,26 @@ namespace listes{
 
         return current;
     }
+    std::string histo::pop(long p){
+        std::string current;
+        while(p-->0){
+            if(length > 0){
+                current = last->get();
+                length --;
+                last = last->get_prev();
+                //free next
+                delete last->get_next();
+                last->next(NULL);
+            }
+            else
+            {
+                break;
+            }
+            
+        };
+        
+        return current;
+    }
      histo::histo()
     {
         first =  new base<std::string>;

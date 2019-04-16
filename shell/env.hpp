@@ -13,15 +13,13 @@
         public:
             env(/* args */);
             ~env();
+            int new_number(const char *, const char *);
+            int delete_var(const char *);
+            std::string get(const char *);
+            std::string update(const char *,const char *);
         };
+         
         
-        env::env(/* args */)
-        {
-        }
-        
-        env::~env()
-        {
-        }
     }
     
     

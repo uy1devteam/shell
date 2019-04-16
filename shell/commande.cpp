@@ -3,8 +3,8 @@
     using namespace std;
 
     /* The array below will hold the arguments: args[0] is the command. */
-    
-    char *builtin_str[] = {
+    usCommandes builtinAll (
+            8,
             "cd",
             "ls",
             "grep",
@@ -12,8 +12,9 @@
             "exit",
             "history",
             "rm",
-            "back",
-            };
+            "back"
+            );
+
 
     char *builtinproc_str[] = {"cd","back"};
     extern string base;
@@ -245,16 +246,17 @@
             }
             
         }
-        for (int j = 0; j < num_in(builtin_str); j++) {
-            if (strcmp(args[0][0], (const char *)builtin_str[j]) == 0) {
-
-                int status =    (*builtin_func[j])(args[0]);
-                if(status == -1){
-                    perror(erro_mes(args[0][0]).c_str());
-                }
-                _exit(status);                   
+        int j = builtinAll.is(args[0][0]);
+            
+        if (j != -1 ) {
+            
+            int    status =    (*builtin_func[j])(args[0]);
+            if(status == -1){
+                perror(erro_mes(args[0][0]).c_str());
             }
-        }                
+            _exit(status);                   
+        }
+                        
         if (execvp(args[0][0], args[0]) == -1) {
         perror(erro_mes(args[0][0]).c_str());
         _exit(EXIT_FAILURE);
@@ -290,7 +292,7 @@
         return false;
     }
     string erro_mes(char * arg){
-        return cat_many(2,"msh : ",arg);
+        return cat_many(2,"msh: ",arg);
     }
     bool commande::execute_pipe(){
         
@@ -929,14 +931,14 @@ notaseparatot:      if(etat2){
 			dup2( input, STDIN_FILENO );
 		}
         
+        int j = builtinAll.is(args[cmd][0]);
         
-        for (int j = 0; j <= num_in(builtin_str); j++) {
-            if (strcmp(args[cmd][0], (const char *)builtin_str[j]) == 0) {
-                (*builtin_func[j])(args[cmd]);
-                exit(EXIT_SUCCESS);
-                goto ours_commandes;
-            }
-        } 
+        if (j != -1) {
+            (*builtin_func[j])(args[cmd]);
+            exit(EXIT_SUCCESS);
+            goto ours_commandes;
+        }
+         
 		if (execvp( args[cmd][0], args[cmd]) == -1){
             perror(erro_mes(args[cmd][0]).c_str());
 			exit(EXIT_FAILURE); // If child fails
@@ -1097,3 +1099,55 @@ pass:       i++;
     free(line);
     this->calcule_args();
 }
+
+
+usCommandes::usCommandes(/* args */)
+    {
+    }
+    usCommandes::usCommandes(char ** cmds, int taille)
+    {
+        while(taille > 0){
+            std::string tampon(cmds[--taille]);
+            list.push_back(tampon);
+        }
+    }
+    int usCommandes::is(const char * cmd){
+        vector<string>::iterator il;
+        int i = -1, j = 0;
+        for(il=list.begin();il!=list.end();il++,j++){
+            if((*il).compare(cmd) == EQUAL){
+                i = j;
+                break;
+            }
+        }
+        
+        return i;
+    }
+    size_t usCommandes::length(){
+        return list.capacity();
+    }
+    usCommandes::~usCommandes()
+    {
+    }
+    usCommandes::usCommandes(int nbCmd,...){
+        va_list liste ;
+        va_start (liste , nbCmd) ;
+        int i;
+        
+        for (i=1 ; i<=nbCmd ; i++)
+        { 
+            string tampon = va_arg (liste, char *) ;
+            list.push_back(tampon);
+            
+        }
+        va_end(liste);
+    }
+    void usCommandes::print(){
+        vector<string>::iterator il;
+        for(il=list.begin();il!=list.end();il++){
+            cout << (*il).c_str() << endl;
+        }
+    }
+    std::string usCommandes::get(int i){
+       return list[i]; 
+    }
