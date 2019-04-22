@@ -6,7 +6,7 @@
     
     extern    usCommandes builtinAll; 
 
-    extern    char **builtinproc_str; 
+    extern    usCommandes builtinProcess; 
     string base, username;
     listes::histo  prevRepository;
     environnement::env env;
@@ -467,4 +467,22 @@
                 return false;
                 break;
         }
+    }
+    int var_number(char ** args){
+        int j = 1;
+        size_t p = 0; 
+        bool waitName = true;
+        while(args[j] != NULL){
+            string tampon(args[j]);
+            if(waitName){
+                p = tampon.find_first_of('=');
+                if(p > tampon.capacity()){
+                    cerr << "msh: syntaxe error" << endl;
+                    return -1;
+                }
+                //if(p != tampon.find_last_of('='))
+            }
+            
+        }
+        
     }

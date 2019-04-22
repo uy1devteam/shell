@@ -16,7 +16,7 @@
             );
 
 
-    char *builtinproc_str[] = {"cd","back"};
+    usCommandes builtinProcess(2,"cd","back");
     extern string base;
     #define READ  0
     #define WRITE 1
@@ -470,15 +470,14 @@
             scan_redirection();
             
             if( has_error()) return 1;
-            for (int j = 0; j <= num_in(builtinproc_str); j++) 
+            int j = builtinProcess.is(args[0][0]);
+            if (j != -1) 
             {
-                if (strcmp(args[0][0], (const char *)builtinproc_str[j]) == 0) 
-                {
 
-                    (*builtinproc_func[j])(args[0]);
+                (*builtinproc_func[j])(args[0]);
                 return  1;                       
-                }
             }
+            
             
             return launch();
               
